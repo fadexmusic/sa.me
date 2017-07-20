@@ -1,4 +1,4 @@
-import { User } from './../user/user.component';
+import { User } from './../user/user.service';
 import { serverAdress } from './../app.config';
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
