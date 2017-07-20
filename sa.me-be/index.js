@@ -6,6 +6,7 @@ var cors = require('cors');
 var bcrypt = require('bcrypt');
 var jwt = require('jwt-simple');
 var config = require('./config.js');
+var async = require('async');
 
 /* MODELS */
 var User = require('./models/user');
@@ -118,7 +119,37 @@ app.route('/user/:username')
 
         });
     });
-
+app.route('/follows')
+    .get((req, res) => {
+        if (req.headers.authorization) {
+            let auth = req.headers.authorization.split(' ');
+            if (auth[0] == "Bearer") {
+                let user = jwt.decode(auth[1], config.secret);
+                UUR.find({
+                    followerID: user.id
+                }, (uurfinderr, uurs) => {
+                    if (!uurfinderr) {
+                        async.map(uurs, (uur, callback) => {
+                            User.findById(uur.followsID, (err, res) => {
+                                    if (err) {
+                                        return callback(err);
+                                    }
+                                    return callback(null, res);
+                                }
+                            )}, (err, follows) => {
+                            if(!err){
+                                res.json(follows);
+                            }else{
+                                res.status(500).send('error finding users')
+                            }
+                        }); 
+                    } else {
+                        res.status(500).send('error finding uurs');
+                    }
+                });
+            }
+        }
+    });
 
 /* POSTS */
 app.route('/posts/:userid')
@@ -262,13 +293,17 @@ app.route('/follow/:followid')
                     followerID: user.id,
                     followsID: req.params.followid
                 }, (uurfinderr, uur) => {
-                    if(!uurfinderr){
-                        if(uur != null){
-                            res.json({follows: true});
-                        }else{
-                            res.json({follows: false});
+                    if (!uurfinderr) {
+                        if (uur != null) {
+                            res.json({
+                                follows: true
+                            });
+                        } else {
+                            res.json({
+                                follows: false
+                            });
                         }
-                    }else{
+                    } else {
                         res.status(500).send('error finding uur');
                     }
                 });
