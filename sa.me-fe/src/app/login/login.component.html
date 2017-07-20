@@ -1,0 +1,9 @@
+<h2>Log in</h2>
+<form [formGroup]="loginForm" (ngSubmit)="login()" id="loginform">
+  <input [ngClass]="{invalid: !valid.username.valid}" type="text" placeholder="username" [formControl]="loginForm.controls['username']">
+  <div class="invalid" *ngIf="!valid.username.valid">{{valid.username.message}}</div>
+  <input [ngClass]="{invalid: !valid.password.valid}" type="password" placeholder="password" [formControl]="loginForm.controls['password']">
+  <div class="invalid" *ngIf="!valid.password.valid">{{valid.password.message}}</div>
+  <button form="loginform">log in</button>
+  <a [routerLink]="['/register']" id="switch">register</a>
+</form>

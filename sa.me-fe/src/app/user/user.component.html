@@ -1,0 +1,27 @@
+<div *ngIf="loaded">
+  <div id="head">
+    <div id="user-info">
+      <div id="avatar">
+        <img src="{{user.avatar}}">
+      </div>
+      <div id="info">
+        <div id="username">
+          <h1>
+            {{ user.username }}
+          </h1>
+        </div>
+        <div id="followers">
+          <h3>
+           / {{ user.followers }} followers
+          </h3>
+        </div>
+      </div>
+      <div class="options">
+
+      </div>
+    </div>
+  </div>
+  <div *ngFor="let post of posts">
+    <post [post]="post" [user]="user"></post>
+  </div>
+</div>

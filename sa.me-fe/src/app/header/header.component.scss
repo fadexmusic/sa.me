@@ -1,0 +1,36 @@
+@import '../../assets/variables';
+
+$headerHeight: 60px;
+
+a, a:hover, a:visited, a:active{
+    color: $light;
+    text-decoration: none;
+    transition: .2s all;
+    &:hover{
+        color: darken($light, 10%);
+    }
+}
+
+header{
+    width: 100%;
+    background: $main;
+    color: $light;
+    margin-bottom: 20px;
+    #header{
+        width: 800px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 200px;
+        height: $headerHeight;
+        #logo{
+            line-height: $headerHeight;
+            vertical-align: middle;
+        }
+        #options{
+            line-height: $headerHeight;
+            vertical-align: middle;
+
+            text-align: right;
+        }
+    }
+}

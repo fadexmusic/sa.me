@@ -1,0 +1,30 @@
+<div class="post">
+  <div class="by">
+    <a [routerLink]="['/'+post.by]">
+      <div class="avatar">
+        <img src="{{ user.avatar }}">
+      </div>
+    </a>
+    <div class="name"><a [routerLink]="['/'+post.by]">{{ post.by }}</a> is like</div>
+    <div class="ago">{{ posted }}</div>
+  </div>
+  <div class="content">
+    <div *ngIf="post.type=='image'">
+      <div class="description" *ngIf="post.description!='' || post.description!=null">
+        {{post.description}}
+      </div>
+      <img src="{{post.content}}" width="100%" (dblclick)="same()">
+    </div>
+    <div *ngIf="post.type=='text'">
+      {{ post.content }}
+    </div>
+  </div>
+  <div class="info">
+    <div class="amount">
+      <a>{{ post.sames }}</a>
+      <div *ngIf="post.sames!=1">people are the same</div>
+      <div *ngIf="post.sames==1">person is the same</div>
+    </div>
+    <div *ngIf="auth.loggedIn()" class="interact"><a *ngIf="!samed" (click)="same()">same</a><a *ngIf="samed" (click)="unsame()" class="unsame">unsame</a></div>
+  </div>
+</div>

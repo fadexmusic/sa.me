@@ -1,0 +1,23 @@
+@import '../../assets/variables';
+#tabs {
+  border-bottom: 1px solid $main;
+  button {
+    border-bottom: none;
+    &:nth-child(2) {
+      margin-left: 3px;
+    }
+  }
+  button.active {
+      background: darken($light, 5%);
+  }
+}
+form{
+    margin-top: 10px;
+    textarea{
+        width: 100%;
+        height: 100px;
+    }
+    &#textform{
+        width: 100%;
+    }
+}

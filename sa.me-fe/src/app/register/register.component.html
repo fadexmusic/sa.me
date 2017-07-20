@@ -1,0 +1,13 @@
+<h2>Register</h2>
+<form [formGroup]="registerForm" (ngSubmit)="register()" id="registerform">
+  <input [ngClass]="{invalid: !valid.username.valid}" type="text" placeholder="username" [formControl]="registerForm.controls['username']">
+  <div class="invalid">{{ valid.username.message }}</div>
+  <input [ngClass]="{invalid: !valid.email.valid}" type="email" placeholder="email" [formControl]="registerForm.controls['email']">
+  <div class="invalid">{{ valid.email.message }}</div>
+  <input [ngClass]="{invalid: !valid.avatar.valid}" type="text" placeholder="avatar url" [formControl]="registerForm.controls['avatar']">
+  <div class="invalid">{{ valid.avatar.message }}</div>
+  <input [ngClass]="{invalid: !valid.password.valid}" type="password" placeholder="password" [formControl]="registerForm.controls['password']">
+  <div class="invalid">{{ valid.password.message }}</div>
+  <button form="registerform">register</button>
+  <a [routerLink]="['/login']" id="switch">log in</a>
+</form>
