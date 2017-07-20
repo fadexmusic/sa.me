@@ -1,5 +1,6 @@
 {
   "name": "sa.me-fe",
+  "repository": "fadexmusic/sa.me",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
@@ -22,7 +23,9 @@
     "@angular/router": "^4.0.0",
     "core-js": "^2.4.1",
     "rxjs": "^5.1.0",
-    "zone.js": "^0.8.4"
+    "zone.js": "^0.8.4",
+    "angular2-jwt": "0.2.3",
+    "font-awesome": "^4.7.0"
   },
   "devDependencies": {
     "@angular/cli": "1.0.0",
