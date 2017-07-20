@@ -16,9 +16,6 @@ export class FeedComponent implements OnInit {
 
 
   ngOnInit() {
-    if (!this.auth.loggedIn()) {
-      this.router.navigate(['login']);
-    }
   }
 
 }

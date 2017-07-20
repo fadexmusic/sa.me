@@ -9,6 +9,7 @@
   "author": "fadex",
   "license": "ISC",
   "dependencies": {
+    "email-templates": "^2.6.0",
     "nodemailer": "^4.0.1"
   }
 }

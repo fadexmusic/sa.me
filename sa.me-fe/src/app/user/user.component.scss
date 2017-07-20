@@ -9,6 +9,7 @@ $info-height: 50px;
 #user-info {
   width: 100%;
   height: $info-height;
+  position: relative;
   div {
     display: inline-block;
     img {
@@ -30,5 +31,9 @@ $info-height: 50px;
       margin-left: 10px;
       color: lighten($main, 30%);
     }
+  }
+  #options{
+    position: absolute;
+    right: 0;
   }
 }

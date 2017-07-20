@@ -11,6 +11,7 @@ var config = require('./config.js');
 var User = require('./models/user');
 var Post = require('./models/post');
 var UPR = require('./models/userpostrelation');
+var UUR = require('./models/useruserrelation');
 
 /* INIT */
 var app = express();
@@ -120,10 +121,10 @@ app.route('/user/:username')
 
 
 /* POSTS */
-app.route('/posts/:username')
+app.route('/posts/:userid')
     .get((req, res) => {
         Post.find({
-            by: req.params.username
+            byID: req.params.userid
         }).sort({
             posted: -1
         }).exec((err, posts) => {
@@ -176,7 +177,104 @@ app.route('/post')
             res.sendStatus(401);
         }
     })
+app.route('/follow/:followid')
+    .put((req, res) => {
+        if (req.headers.authorization) {
+            let auth = req.headers.authorization.split(' ');
+            if (auth[0] == "Bearer") {
+                let user = jwt.decode(auth[1], config.secret);
+                if (req.body.follow == 1) {
+                    UUR.findOne({
+                        followerID: user.id,
+                        followsID: req.params.followid
+                    }, (uurfinderror, uur) => {
+                        if (!uurfinderror) {
+                            if (uur == null) {
+                                let newuur = new UUR({
+                                    followerID: user.id,
+                                    followsID: req.params.followid
+                                });
+                                newuur.save((uursaveerror) => {
+                                    if (!uursaveerror) {
+                                        User.findById(req.params.followid, (findfollowserror, follows) => {
+                                            if (!findfollowserror) {
+                                                follows.followers++;
+                                                follows.save(followersaverr => {
+                                                    if (!followersaverr) {
+                                                        res.status(200).send('followed');
+                                                    } else {
+                                                        res.status(500).send('error saving follows');
+                                                    }
+                                                })
 
+                                            } else {
+                                                res.status(500).send('error finding follow user');
+                                            }
+                                        });
+                                    } else {
+                                        res.status(500).send('error following');
+                                    }
+                                });
+                            } else {
+                                res.status(401).send('already followed');
+                            }
+                        } else {
+                            res.sendStatus(500);
+                        }
+                    });
+                } else if (req.body.follow == -1) {
+                    UUR.findOne({
+                        followerID: user.id,
+                        followsID: req.params.followid
+                    }).remove(uurfinderror => {
+                        if (!uurfinderror) {
+                            User.findById(req.params.followid, (userfinderr, user) => {
+                                if (!userfinderr) {
+                                    user.followers--;
+                                    user.save(usersaverr => {
+                                        if (!usersaverr) {
+                                            res.status(200).send('follows saved');
+                                        } else {
+                                            res.status(500).send('error saving follows');
+                                        }
+                                    });
+                                } else {
+                                    res.status(500).send('user not found');
+                                }
+                            })
+                        } else {
+                            res.status(401).send('error finding uur')
+                        }
+                    });
+                } else {
+                    res.status(401).send('no action');
+                }
+
+            }
+        }
+    })
+    .get((req, res) => {
+        if (req.headers.authorization) {
+            let auth = req.headers.authorization.split(' ');
+            if (auth[0] == "Bearer") {
+                let user = jwt.decode(auth[1], config.secret);
+                UUR.findOne({
+                    followerID: user.id,
+                    followsID: req.params.followid
+                }, (uurfinderr, uur) => {
+                    if(!uurfinderr){
+                        if(uur != null){
+                            res.json({follows: true});
+                        }else{
+                            res.json({follows: false});
+                        }
+                    }else{
+                        res.status(500).send('error finding uur');
+                    }
+                });
+            }
+        }
+    });
 /* SAME */
 app.route('/post/:postid')
     .put((req, res) => {

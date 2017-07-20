@@ -12,12 +12,15 @@
         </div>
         <div id="followers">
           <h3>
-           / {{ user.followers }} followers
+            / {{ user.followers }} followers
           </h3>
         </div>
       </div>
-      <div class="options">
-
+      <div id="options" *ngIf="auth.loggedIn()">
+        <div *ngIf="!isMe">
+          <button *ngIf="!follows" (click)="follow()">follow</button>
+          <button *ngIf="follows" (click)="unfollow()" class="active" (mouseover)="unfollowButton='unfollow'" (mouseout)="unfollowButton='  following '">{{ unfollowButton }}</button>
+        </div>
       </div>
     </div>
   </div>

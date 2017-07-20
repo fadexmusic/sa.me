@@ -3,8 +3,7 @@
   margin: 0;
   padding: 0;
   font-family: 'Roboto', sans-serif;
-  box-sizing: border-box;
-  //color: $main;
+  box-sizing: border-box; //color: $main;
 }
 
 h1,
@@ -36,7 +35,8 @@ a:active {
 
 form {
   width: 50%;
-  input, textarea {
+  input,
+  textarea {
     color: $main;
     width: 100%;
     margin-top: 10px;
@@ -46,7 +46,8 @@ form {
     border: 1px solid $main;
     resize: none;
   }
-  input.invalid, textarea.invalid {
+  input.invalid,
+  textarea.invalid {
     color: $warning;
     border: 1px solid $warning;
   }
@@ -75,5 +76,13 @@ button {
   &:hover {
     background: $main;
     color: $light;
+  }
+  &.active {
+    background: $main;
+    color: $light;
+    &:hover {
+      background: none;
+      color: $main;
+    }
   }
 }
