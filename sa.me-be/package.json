@@ -2,6 +2,7 @@
   "name": "sa.me-be",
   "version": "1.0.0",
   "description": "same backend",
+  "repository": "fadexmusic/sa.me",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,6 +11,12 @@
   "license": "ISC",
   "dependencies": {
     "email-templates": "^2.6.0",
-    "nodemailer": "^4.0.1"
+    "nodemailer": "^4.0.1",
+    "express": "^4.15.3",
+    "mongoose": "^4.11.3",
+    "body-parser": "^1.17.2",
+    "cors": "^2.8.4",
+    "bcrypt": "^1.0.2",
+    "jwt-simple": "^0.5.1"
   }
 }
