@@ -2,7 +2,7 @@
   <div id="header">
     <div id="logo">
       <a [routerLink]="['feed']">
-        <h1>Same</h1>
+        <h1>same</h1>
       </a>
     </div>
     <div class="search"> 
@@ -11,7 +11,7 @@
     <div id="options">
       <span *ngIf="auth.loggedIn()">
         <a [routerLink]="['/post']"><i class="fa fa-plus" aria-hidden="true"></i></a> |
-        <a [routerLink]="['', user.username]"><i class="fa fa-user-o" aria-hidden="true"></i></a>  |
+        <a [routerLink]="['', auth.user.username]"><i class="fa fa-user-o" aria-hidden="true"></i></a>  |
          <a [routerLink]="['login']"><i class="fa fa-power-off" aria-hidden="true"></i></a></span>
       <span *ngIf="!auth.loggedIn()"><a [routerLink]="['login']">log in</a></span>
     </div>

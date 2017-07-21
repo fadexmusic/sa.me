@@ -70,7 +70,6 @@ button {
   outline: none;
   border: 1px solid $main;
   background: $light;
-  border: 1px solid $main;
   transition: all .2s;
   cursor: pointer;
   &:hover {
@@ -83,6 +82,22 @@ button {
     &:hover {
       background: none;
       color: $main;
+    }
+  }
+  &.confirmation {
+    border: 1px solid $confirmation;
+    color: $confirmation;
+    &:hover {
+      background: $confirmation;
+      color: $light;
+    }
+  }
+  &.danger {
+    color: $danger;
+    border: 1px solid $danger;
+    &:hover {
+      background: $danger;
+      color: $light;
     }
   }
 }

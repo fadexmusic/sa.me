@@ -80,9 +80,9 @@ $by-height: 30px;
       position: absolute;
       right: 0;
       .unsame{
-        color: lighten($warning, 20%);
+        color: lighten($danger, 20%);
         &:hover{
-          color: lighten($warning, 30%);
+          color: lighten($danger, 30%);
         }
       }
     }

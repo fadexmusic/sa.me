@@ -12,7 +12,7 @@
         </div>
         <div id="followers">
           <h3>
-            / {{ user.followers }} followers
+            / <b>{{ user.followers }}</b> followers / <b>{{user.following}}</b> following
           </h3>
         </div>
       </div>
@@ -20,6 +20,9 @@
         <div *ngIf="!isMe">
           <button *ngIf="!follows" (click)="follow()">follow</button>
           <button *ngIf="follows" (click)="unfollow()" class="active" (mouseover)="unfollowButton='unfollow'" (mouseout)="unfollowButton='  following '">{{ unfollowButton }}</button>
+        </div>
+        <div *ngIf="isMe">
+         <a [routerLink]="['/edit']"><i class="fa fa-pencil" aria-hidden="true"></i> edit profile</a>
         </div>
       </div>
     </div>

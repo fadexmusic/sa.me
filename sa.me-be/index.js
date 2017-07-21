@@ -58,7 +58,7 @@ app.route('/register')
                 }
                 newUser.save((err) => {
                     if (err) {
-                        switch (err.toJSON().errmsg.split(' ')[7].split('_')[0]) {
+                        switch (err.errmsg.split(' ')[7].split('_')[0]) {
                             case 'username':
                                 res.status(400).send('username taken');
                                 break;
@@ -118,9 +118,153 @@ app.route('/user/:username')
 
                     res.status(404).send('user not found');
                 }
-            } else {}
+            } else {
+                res.status(401).send('');
+            }
 
         });
+    });
+app.route('/user')
+    .get((req, res) => {
+        if (req.headers.authorization) {
+            let auth = req.headers.authorization.split(' ');
+            if (auth[0] == "Bearer") {
+                let user = jwt.decode(auth[1], config.secret);
+                User.findById(user.id, (err, user) => {
+                    if (!err) {
+                        if (user) {
+                            res.json(user);
+                        } else {
+                            res.status(404).send('not found');
+                        }
+                    } else {
+                        res.status(401).send('');
+                    }
+                });
+            }
+        }
+    })
+    .put((req, res) => {
+        if (req.headers.authorization) {
+            let auth = req.headers.authorization.split(' ');
+            if (auth[0] == "Bearer") {
+                let user = jwt.decode(auth[1], config.secret);
+                async.waterfall([
+                    (callback) => {
+                        User.findById(user.id, (err, user) => {
+                            if (!err) {
+                                return callback(null, user);
+                            }
+                            throw err;
+                        });
+                    }, (user, callback) => {
+                        bcrypt.compare(req.body.password, user.password, (err, same) => {
+                            if (!err) {
+                                if (same) {
+                                    callback(null, user)
+                                } else {
+                                    return callback(true, 'wrong password');
+                                }
+                            } else {
+                                throw err;
+                            }
+                        })
+                    }, (user, callback) => {
+                        if (req.query.action == "info") {
+                            user.username = req.body.username;
+                            user.bio = req.body.bio;
+                            if (!req.body.avatar || req.body.avatar == "") {
+                                user.avatar = "https://betruewebdesign.com/img/avatar-300x300.png";
+                            } else {
+                                user.avatar = req.body.avatar;
+                            }
+                            user.email = req.body.email;
+                            user.save((err) => {
+                                if (!err) {
+                                    let token = jwt.encode({username: req.body.username, id: user.id}, config.secret);
+                                    return callback(null, token)
+                                } else {
+                                    switch (err.errmsg.split(' ')[7].split('_')[0]) {
+                                        case 'username':
+                                            callback(true, 'username taken');
+                                            break;
+                                        case 'email':
+                                            callback(true, 'email taken');
+                                            break;
+                                        default:
+                                            callback(true, 'unknown error')
+                                            break;
+                                    }
+                                }
+
+                            });
+                        } else if (req.query.action == "password") {
+                            bcrypt.hash(req.body.newpassword, config.saltRounds, (error, password) => {
+                                if (error) {
+                                    throw err;
+                                } else {
+                                    user.password = password;
+                                    user.save((err) => {
+                                        if (!err) {
+                                            return callback(null, 'password saved');
+                                        }
+                                        throw err;
+                                    })
+                                }
+                            });
+                        }
+                    }
+                ], (err, callback) => {
+                    if (err) {
+                        res.status(401).send(callback);
+                    } else {
+                        
+                        res.status(200).send(callback);
+                    }
+                });
+            }
+        }
+    })
+    .delete((req, res) => {
+        if (req.headers.authorization) {
+            let auth = req.headers.authorization.split(' ');
+            if (auth[0] == "Bearer") {
+                let user = jwt.decode(auth[1], config.secret);
+                async.waterfall([
+                    (callback) => {
+                        User.findById(user.id, (err, user) => {
+                            if (!err) {
+                                return callback(null, user);
+                            }
+                            return callback(err, 'user not found');
+                        })
+                    },
+                    (user, callback) => {
+                        bcrypt.compare(req.body.password, user.password, (err, same) => {
+                            if (!err) {
+                                if (same) {
+                                    return callback(null, user)
+                                } else {
+                                    return callback(true, 'wrong password')
+                                }
+                            } else {
+                                throw err;
+                            }
+                        })
+                    },
+                    (user, callback) => {
+                        //deletition
+                        
+                    }
+                ], (err, callback) => {
+                    if (err) {
+                        res.status(401).send(callback);
+                    } else {
+                        res.status(200).send('user deleted');
+                    }
+                });
+            }
+        }
     });
 app.route('/follows')
     .get((req, res) => {
@@ -179,7 +323,6 @@ app.route('/post')
                 if (req.body.type == "text") {
                     let newPost = new Post({
                         type: 'text',
-                        by: user.username,
                         byID: user.id,
                         content: req.body.content
                     });
@@ -193,7 +336,6 @@ app.route('/post')
                 } else if (req.body.type == "image") {
                     let newPost = new Post({
                         type: 'image',
-                        by: user.username,
                         byID: user.id,
                         content: req.body.content,
                         description: req.body.description
@@ -235,7 +377,20 @@ app.route('/follow/:followid')
                                                 follows.followers++;
                                                 follows.save(followersaverr => {
                                                     if (!followersaverr) {
-                                                        res.status(200).send('followed');
+                                                        User.findById(user.id, (findfollowererr, follower) => {
+                                                            if (!findfollowererr) {
+                                                                follower.following++;
+                                                                follower.save(followersaverr => {
+                                                                    if (!followersaverr) {
+                                                                        res.status(200).send('followed');
+                                                                    } else {
+                                                                        res.status(500).send('error saving follower');
+                                                                    }
+                                                                })
+                                                            } else {
+                                                                res.status(500).send('error finding follower');
+                                                            }
+                                                        })
                                                     } else {
                                                         res.status(500).send('error saving follows');
                                                     }
@@ -267,7 +422,20 @@ app.route('/follow/:followid')
                                     user.followers--;
                                     user.save(usersaverr => {
                                         if (!usersaverr) {
-                                            res.status(200).send('follows saved');
+                                            User.findById(user.id, (findfollowererr, follower) => {
+                                                if (!findfollowererr) {
+                                                    follower.following--;
+                                                    follower.save(followersaverr => {
+                                                        if (!followersaverr) {
+                                                            res.status(200).send('unfollowed');
+                                                        } else {
+                                                            res.status(500).send('error saving follower');
+                                                        }
+                                                    })
+                                                } else {
+                                                    res.status(500).send('error finding follower');
+                                                }
+                                            })
                                         } else {
                                             res.status(500).send('error saving follows');
                                         }
@@ -436,7 +604,7 @@ app.route('/search')
                     res.status(500).send('error searching');
                 }
             })
-        }else{
+        } else {
             res.status(401).send('empty search');
         }
     });

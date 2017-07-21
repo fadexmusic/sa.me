@@ -9,12 +9,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
 
-  user: any;
 
-  constructor(public auth: AuthService, private tokenUtil: TokenUtil) {
-    if (auth.loggedIn()) {
-      this.user = this.tokenUtil.getUser(this.auth.token);
-    }
+  constructor(public auth: AuthService) {
   }
 
   ngOnInit() {

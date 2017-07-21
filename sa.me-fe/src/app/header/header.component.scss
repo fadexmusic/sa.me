@@ -1,35 +1,44 @@
 @import '../../assets/variables';
-
-
-a, a:hover, a:visited, a:active{
-    color: $light;
-    text-decoration: none;
-    transition: .2s all;
-    &:hover{
-        color: darken($light, 10%);
-    }
+a,
+a:hover,
+a:visited,
+a:active {
+  color: $light;
+  text-decoration: none;
+  transition: .2s all;
+  &:hover {
+    color: darken($light, 10%);
+  }
 }
 
-header{
-    width: 100%;
-    background: $main;
-    color: $light;
-    margin-bottom: 20px;
-    #header{
-        width: 800px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: 200px 1fr 200px;
-        height: $header-height;
-        #logo{
-            line-height: $header-height;
-            vertical-align: middle;
-        }
-        #options{
-            line-height: $header-height;
-            vertical-align: middle;
-
-            text-align: right;
-        }
+header {
+  width: 100%;
+  background: $main;
+  color: $light;
+  margin-bottom: 20px;
+  #header {
+    width: 800px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 100px 1fr 100px;
+    height: $header-height;
+    #logo {
+      line-height: $header-height;
+      vertical-align: middle;
     }
+    #options {
+      line-height: $header-height;
+      vertical-align: middle;
+      text-align: right;
+    }
+  }
+}
+
+@media only screen and (max-width: 845px) {
+  header {
+    #header {
+      width: 100%;
+      padding: 0 10px;
+    }
+  }
 }

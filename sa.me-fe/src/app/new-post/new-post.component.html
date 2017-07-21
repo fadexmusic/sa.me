@@ -6,12 +6,12 @@
 <form [formGroup]="textForm" *ngIf="type=='text'" id="textform" (ngSubmit)="submitText()">
   <textarea placeholder="your post" [formControl]="textForm.controls['content']" [ngClass]="{invalid: !textValid.content.valid}"></textarea>
   <div class="invalid" *ngIf="!textValid.content.valid"> {{ textValid.content.message }} </div>
-  <button form="textform">post</button>
+  <button form="textform" class="confirmation">post</button>
 </form>
 <form [formGroup]="imageForm" *ngIf="type=='image'" id="imageform" (ngSubmit)="submitImage()">
   <input placeholder="url" [formControl]="imageForm.controls['content']" [ngClass]="{invalid: !imageValid.content.valid}">
   <div class="invalid" *ngIf="!imageValid.content.valid"> {{ imageValid.content.message }} </div>
   <input placeholder="description" [formControl]="imageForm.controls['description']" [ngClass]="{invalid: !imageValid.description.valid}">
   <div class="invalid" *ngIf="!imageValid.description.valid"> {{ imageValid.description.message }} </div>
-  <button form="imageform">post</button>
+  <button form="imageform" class="confirmation">post</button>
 </form>

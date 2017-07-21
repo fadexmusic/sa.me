@@ -21,6 +21,7 @@ import { NewPostComponent } from './new-post/new-post.component';
 import { SearchComponent } from './header/search/search.component';
 
 import { ClickOutsideModule } from 'ng-click-outside';
+import { EditComponent } from './user/edit/edit.component';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions, as: AuthService) {
   return new AuthHttp(as.getAuthConfig(), http, options);
@@ -37,7 +38,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions, as: 
     NotFoundComponent,
     PostComponent,
     NewPostComponent,
-    SearchComponent
+    SearchComponent,
+    EditComponent
   ],
   imports: [
     BrowserModule,

@@ -16,15 +16,17 @@ export class RegisterComponent implements OnInit {
     username: { valid: true, message: '' },
     email: { valid: true, message: '' },
     avatar: { valid: true, message: '' },
-    password: { valid: true, message: '' }
+    password: { valid: true, message: '' },
+    confirmPassword: { valid: true, message: '' }
   }
   constructor(private rs: RegisterService, private fb: FormBuilder, private router: Router) {
     this.registerForm = fb.group({
       username: ['', Validators.required],
       email: ['', Validators.required],
       avatar: [''],
-      password: ['', Validators.required]
-    })
+      password: ['', Validators.required],
+      confirmPassword: ['', Validators.required]
+    });
   }
   ngOnInit() {
     for (let i in this.valid) {
@@ -38,26 +40,37 @@ export class RegisterComponent implements OnInit {
   }
   register(): void {
     if (this.registerForm.valid) {
-      this.rs.register(this.registerForm.value).subscribe(res => {
-        this.router.navigate(['login']);
-      }, err => {
-        console.log(err)
-        switch (err.text()) {
-          case "username taken":
-            this.valid.username.valid = false;
-            this.valid.username.message = 'username taken'
-            break;
-          case "email taken":
-            this.valid.email.valid = false;
-            this.valid.email.message = 'account with this email already exists'
-            break;
-        }
-      });
+      if (this.registerForm.get('password').value == this.registerForm.get('confirmPassword').value) {
+        this.rs.register(this.registerForm.value).subscribe(res => {
+          this.router.navigate(['login']);
+        }, err => {
+          switch (err.text()) {
+            case "username taken":
+              this.valid.username.valid = false;
+              this.valid.username.message = 'username taken'
+              break;
+            case "email taken":
+              this.valid.email.valid = false;
+              this.valid.email.message = 'account with this email already exists'
+              break;
+          }
+        });
+      } else {
+        this.valid.confirmPassword.valid = false;
+        this.valid.confirmPassword.message = "passwords don't match";
+      }
     } else {
       for (let i in this.valid) {
+
         if (!this.registerForm.get(i).valid) {
-          this.valid[i].valid = false;
-          this.valid[i].message = i + ' required'
+          if (i == 'confirmPassword') {
+            this.valid[i].valid = false;
+            this.valid[i].message = 'confirm password required'
+          } else {
+            this.valid[i].valid = false;
+            this.valid[i].message = i + ' required'
+
+          }
         }
       }
 

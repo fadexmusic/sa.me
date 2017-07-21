@@ -20,7 +20,15 @@ var userSchema = new Schema({
     type: String,
     required: true
   },
+  bio: {
+    type: String,
+    default: ""
+  },
   followers: {
+    type: Number,
+    default: 0
+  },
+  following: {
     type: Number,
     default: 0
   }

@@ -1,3 +1,4 @@
+import { EditComponent } from './user/edit/edit.component';
 import { NewPostComponent } from './new-post/new-post.component';
 import { PostComponent } from './user/post/post.component';
 import { AuthGuard } from './auth.guard';
@@ -36,10 +37,16 @@ export const routes: Routes = [
     {
         path: '404',
         component: NotFoundComponent
-    }, 
+    },
+    {
+        path: 'edit',
+        component: EditComponent,
+        canActivate: [AuthGuard]
+    },
     {
         path: ':username',
-        component: UserComponent
+        component: UserComponent,
+
     }
 ]
 

@@ -1,0 +1,40 @@
+<h2>Edit profile</h2>
+<div *ngIf="meLoaded">
+  <form [formGroup]="editForm" (ngSubmit)="edit()" id="editform">
+    <input [ngClass]="{invalid: !editValid.username.valid}" type="text" placeholder="username" [formControl]="editForm.controls['username']">
+    <div class="invalid">{{ editValid.username.message }}</div>
+    <input [ngClass]="{invalid: !editValid.email.valid}" type="email" placeholder="email" [formControl]="editForm.controls['email']">
+    <div class="invalid">{{ editValid.email.message }}</div>
+    <input [ngClass]="{invalid: !editValid.bio.valid}" type="text" placeholder="bio" [formControl]="editForm.controls['bio']">
+    <div class="invalid">{{ editValid.bio.message }}</div>
+    <input [ngClass]="{invalid: !editValid.avatar.valid}" type="text" placeholder="avatar url" [formControl]="editForm.controls['avatar']">
+    <div class="invalid">{{ editValid.avatar.message }}</div>
+    <br>
+    <input [ngClass]="{invalid: !editValid.password.valid}" type="password" placeholder="type your password to confirm" [formControl]="editForm.controls['password']">
+    <div class="invalid">{{ editValid.password.message }}</div>
+    <button form="editform" class="confirmation">edit</button>
+  </form>
+
+
+  <h2 style="margin-top: 20px;">Edit password</h2>
+  <form [formGroup]="editPasswordForm" (ngSubmit)="editPassword()" id="editpasswordform">
+    <input [ngClass]="{invalid: !editPasswordValid.newpassword.valid}" type="password" placeholder="new password" [formControl]="editPasswordForm.controls['newpassword']">
+    <div class="invalid">{{ editPasswordValid.newpassword.message }}</div>
+    <input [ngClass]="{invalid: !editPasswordValid.newpasswordconfirm.valid}" type="password" placeholder="confirm new password"
+      [formControl]="editPasswordForm.controls['newpasswordconfirm']">
+    <div class="invalid">{{ editPasswordValid.newpasswordconfirm.message }}</div>
+    <br>
+    <input [ngClass]="{invalid: !editPasswordValid.password.valid}" type="password" placeholder="type your old password to confirm"
+      [formControl]="editPasswordForm.controls['password']">
+    <div class="invalid">{{ editPasswordValid.password.message }}</div>
+    <button form="editpasswordform" class="confirmation">edit password</button>
+  </form>
+
+  <h2 style="margin-top: 20px;">Delete account</h2>
+  <form [formGroup]="deleteForm" (ngSubmit)="deleteAccount()" id="deleteform">
+    <input [ngClass]="{invalid: !deleteValid.password.valid}" type="password" placeholder="type your password to confirm"
+      [formControl]="deleteForm.controls['password']">
+    <div class="invalid">{{ deleteValid.password.message }}</div>
+    <button form="deleteform" class="danger">delete account</button>
+  </form>
+</div>

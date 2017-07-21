@@ -8,6 +8,8 @@
   <div class="invalid">{{ valid.avatar.message }}</div>
   <input [ngClass]="{invalid: !valid.password.valid}" type="password" placeholder="password" [formControl]="registerForm.controls['password']">
   <div class="invalid">{{ valid.password.message }}</div>
+  <input [ngClass]="{invalid: !valid.confirmPassword.valid}" type="password" placeholder="confirm password" [formControl]="registerForm.controls['confirmPassword']">
+  <div class="invalid">{{ valid.confirmPassword.message }}</div>
   <button form="registerform">register</button>
   <a [routerLink]="['/login']" id="switch">log in</a>
 </form>

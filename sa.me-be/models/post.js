@@ -2,10 +2,6 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var postSchema = new Schema({
-    by: {
-        type: String,
-        required: true
-    },
     byID: {
         type: String,
         required: true

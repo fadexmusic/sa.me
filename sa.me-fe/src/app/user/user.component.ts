@@ -17,10 +17,9 @@ export class UserComponent implements OnInit {
   loaded: boolean = false;
   isMe: boolean = false;
   follows: boolean = false;
+  
   unfollowButton: string = 'following';
   constructor(private router: Router, private route: ActivatedRoute, private auth: AuthService, private us: UserService, private tokenUtil: TokenUtil) { }
-
-
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -46,7 +45,6 @@ export class UserComponent implements OnInit {
         this.router.navigate(['404']);
       });
     });
-
   }
   follow(): void {
     this.us.follow(this.user._id).subscribe(res => {
