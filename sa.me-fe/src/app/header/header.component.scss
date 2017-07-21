@@ -1,6 +1,5 @@
 @import '../../assets/variables';
 
-$headerHeight: 60px;
 
 a, a:hover, a:visited, a:active{
     color: $light;
@@ -20,14 +19,14 @@ header{
         width: 800px;
         margin: 0 auto;
         display: grid;
-        grid-template-columns: 1fr 200px;
-        height: $headerHeight;
+        grid-template-columns: 200px 1fr 200px;
+        height: $header-height;
         #logo{
-            line-height: $headerHeight;
+            line-height: $header-height;
             vertical-align: middle;
         }
         #options{
-            line-height: $headerHeight;
+            line-height: $header-height;
             vertical-align: middle;
 
             text-align: right;

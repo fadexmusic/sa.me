@@ -29,6 +29,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 /* ROUTING */
+app.get('/', (req, res) => {
+    res.send('app works');
+});
 
 
 /* REGISTER */
@@ -131,18 +134,18 @@ app.route('/follows')
                     if (!uurfinderr) {
                         async.map(uurs, (uur, callback) => {
                             User.findById(uur.followsID, (err, res) => {
-                                    if (err) {
-                                        return callback(err);
-                                    }
-                                    return callback(null, res);
+                                if (err) {
+                                    return callback(err);
                                 }
-                            )}, (err, follows) => {
-                            if(!err){
+                                return callback(null, res);
+                            })
+                        }, (err, follows) => {
+                            if (!err) {
                                 res.json(follows);
-                            }else{
+                            } else {
                                 res.status(500).send('error finding users')
                             }
-                        }); 
+                        });
                     } else {
                         res.status(500).send('error finding uurs');
                     }
@@ -417,6 +420,28 @@ app.route('/post/:postid')
             }
         }
     });
+
+/* SEARCH */
+app.route('/search')
+    .get((req, res) => {
+        if (req.query.query != "" && req.query.query != null && req.query.query != undefined) {
+            User.find({
+                "username": {
+                    $regex: ".*" + req.query.query + ".*"
+                }
+            }, (searcherr, searchResults) => {
+                if (!searcherr) {
+                    res.json(searchResults);
+                } else {
+                    res.status(500).send('error searching');
+                }
+            })
+        }else{
+            res.status(401).send('empty search');
+        }
+    });
+
+
 /* START SERVER */
 app.listen(config.port, () => {
     console.log('listening on ' + config.port)

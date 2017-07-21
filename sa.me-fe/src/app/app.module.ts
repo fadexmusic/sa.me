@@ -18,6 +18,9 @@ import { RegisterComponent } from './register/register.component';
 import { HeaderComponent } from './header/header.component';
 import { PostComponent } from './user/post/post.component';
 import { NewPostComponent } from './new-post/new-post.component';
+import { SearchComponent } from './header/search/search.component';
+
+import { ClickOutsideModule } from 'ng-click-outside';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions, as: AuthService) {
   return new AuthHttp(as.getAuthConfig(), http, options);
@@ -33,7 +36,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions, as: 
     HeaderComponent,
     NotFoundComponent,
     PostComponent,
-    NewPostComponent
+    NewPostComponent,
+    SearchComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +45,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions, as: 
     ReactiveFormsModule,
     HttpModule,
     RouterModule,
-    routing
+    routing,
+    ClickOutsideModule  
   ],
   providers: [
     AuthService,

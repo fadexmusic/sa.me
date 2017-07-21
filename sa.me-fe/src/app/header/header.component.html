@@ -5,6 +5,9 @@
         <h1>Same</h1>
       </a>
     </div>
+    <div class="search"> 
+    <app-search></app-search>  
+    </div>
     <div id="options">
       <span *ngIf="auth.loggedIn()">
         <a [routerLink]="['/post']"><i class="fa fa-plus" aria-hidden="true"></i></a> |

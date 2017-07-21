@@ -18,7 +18,7 @@ export class PostComponent implements OnInit {
   posted: String;
   aDay = 24 * 60 * 60 * 1000;
 
-  constructor(private auth: AuthService, private us: UserService, private ps: PostService) { }
+  constructor(public auth: AuthService, private us: UserService, private ps: PostService) { }
 
   ngOnInit() {
     this.posted = this.timeSince(new Date(new Date(this.post.posted))) + ' ago';
