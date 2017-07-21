@@ -39,7 +39,6 @@ export class LoginComponent implements OnInit {
   login(): void {
     if (this.loginForm.valid) {
       this.auth.login(this.loginForm.value).subscribe(res => {
-        console.log(res)
         if (res) {
           location.href = '/feed';//this.router.navigate(['feed']);
         }

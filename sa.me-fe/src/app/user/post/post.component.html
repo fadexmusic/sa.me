@@ -1,12 +1,13 @@
-<div class="post">
+<div class="post" *ngIf="loaded">
   <div class="by">
     <a [routerLink]="['/'+post.by]">
       <div class="avatar">
         <img src="{{ user.avatar }}">
       </div>
     </a>
-    <div class="name"><a [routerLink]="['/'+post.by]">{{ user.username }}</a> is like</div>
-    <div class="ago">{{ posted }}</div>
+    <div class="name"><a [routerLink]="['/'+user.username]">{{ user.username }}</a> is like</div>
+    <div class="ago">{{ posted }} </div>
+    <span *ngIf="isMe" class="remove"><a (click)="remove()">&times; </a></span>
   </div>
   <div class="content">
     <div *ngIf="post.type=='image'">

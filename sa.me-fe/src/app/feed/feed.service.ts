@@ -1,5 +1,5 @@
-import { serverAdress } from './../app.config';
 import { Observable } from 'rxjs';
+import { serverAdress } from './../app.config';
 import { AuthService } from './../services/auth.service';
 import { AuthHttp } from 'angular2-jwt/angular2-jwt';
 import { Injectable } from '@angular/core';
@@ -14,7 +14,7 @@ export class FeedService {
     headers.append('Content-Type', 'application/json');
     this.options = new RequestOptions({ headers: headers });
   }
-  follows(): Observable<any>{
-    return this.http.get(serverAdress + 'follows/').map(res => res.json());
+  getFeed(): Observable<any>{
+    return this.http.get(serverAdress + 'feed').map(res => res.json());
   }
 }

@@ -13,6 +13,7 @@ var User = require('./models/user');
 var Post = require('./models/post');
 var UPR = require('./models/userpostrelation');
 var UUR = require('./models/useruserrelation');
+var Feed = require('./models/feed');
 
 /* INIT */
 var app = express();
@@ -106,23 +107,38 @@ app.route('/login')
     });
 
 /* USER */
-app.route('/user/:username')
+app.route('/user/:user')
     .get((req, res) => {
-        User.findOne({
-            username: req.params.username
-        }, (err, user) => {
-            if (!err) {
-                if (user != null) {
-                    res.json(user);
+        if (req.query.by == 'name') {
+            User.findOne({
+                username: req.params.user
+            }, (err, user) => {
+                if (!err) {
+                    if (user != null) {
+                        res.json(user);
+                    } else {
+                        res.status(404).send('user not found');
+                    }
                 } else {
-
-                    res.status(404).send('user not found');
+                    res.status(401).send('');
                 }
-            } else {
-                res.status(401).send('');
-            }
 
-        });
+            });
+        } else if (req.query.by == "id") {
+            User.findById(req.params.user, (err, user) => {
+                if (!err) {
+                    if (user != null) {
+                        res.json(user);
+                    } else {
+
+                        res.status(404).send('user not found');
+                    }
+                } else {
+                    res.status(401).send('');
+                }
+            });
+        }
+
     });
 app.route('/user')
     .get((req, res) => {
@@ -359,7 +375,6 @@ app.route('/posts/:userid')
             }
         })
     });
-
 app.route('/post')
     .post((req, res) => {
         if (req.headers.authorization) {
@@ -372,11 +387,51 @@ app.route('/post')
                         byID: user.id,
                         content: req.body.content
                     });
-                    newPost.save((err) => {
-                        if (err) {
-                            res.status(500).send('error posting');
+                    newPost.save((err, post) => {
+                        if (!err) {
+                            async.waterfall([
+                                (callback) => {
+                                    UUR.find({
+                                        followsID: user.id
+                                    }, (err, uurs) => {
+                                        if (err) throw err;
+                                        if (uurs.length > 0) {
+                                            return callback(null, uurs)
+                                        } else {
+                                            return callback(true, 'no followers, posted')
+                                        }
+                                    })
+                                }, (uurs, callback) => {
+                                    async.map(uurs, (uur, cb) => {
+                                        let newFeed = new Feed({
+                                            followerID: uur.followerID,
+                                            postID: post._id
+                                        });
+                                        newFeed.save((err) => {
+                                            if (err) throw err;
+                                            return cb(null);
+                                        });
+                                    }, (err, cb) => {
+                                        if (err) throw err;
+                                        return callback(null, 'posted, feeds pushed')
+                                    })
+                                }
+                            ], (err, callback) => {
+                                if (err) {
+                                    if (callback == "no followers, posted") {
+
+                                        res.status(200).send(callback);
+                                    } else {
+
+                                        res.status(500).send(callback);
+                                    }
+                                } else {
+                                    res.status(200).send(callback);
+                                }
+                            })
+
                         } else {
-                            res.status(200).send('posted');
+                            throw err;
                         }
                     });
                 } else if (req.body.type == "image") {
@@ -386,11 +441,50 @@ app.route('/post')
                         content: req.body.content,
                         description: req.body.description
                     });
-                    newPost.save((err) => {
-                        if (err) {
-                            res.status(500).send('error posting');
+                    newPost.save((err, post) => {
+                        if (!err) {
+                            async.waterfall([
+                                (callback) => {
+                                    UUR.find({
+                                        followsID: user.id
+                                    }, (err, uurs) => {
+                                        if (err) throw err;
+                                        if (uurs.length > 0) {
+                                            return callback(null, uurs)
+                                        } else {
+                                            return callback(true, 'no followers, posted')
+                                        }
+                                    })
+                                }, (uurs, callback) => {
+                                    async.map(uurs, (uur, cb) => {
+                                        let newFeed = new Feed({
+                                            followerID: uur.followerID,
+                                            postID: post._id
+                                        });
+                                        newFeed.save((err) => {
+                                            if (err) throw err;
+                                            return cb(null);
+                                        });
+                                    }, (err, cb) => {
+                                        if (err) throw err;
+                                        return callback(null, 'posted, feeds pushed')
+                                    })
+                                }
+                            ], (err, callback) => {
+                                if (err) {
+                                    if (callback == "no followers, posted") {
+
+                                        res.status(200).send(callback);
+                                    } else {
+
+                                        throw err;
+                                    }
+                                } else {
+                                    res.status(200).send(callback);
+                                }
+                            })
                         } else {
-                            res.status(200).send('posted');
+                            throw err;
                         }
                     });
                 }
@@ -398,7 +492,120 @@ app.route('/post')
         } else {
             res.sendStatus(401);
         }
+    });
+
+app.route('/post/:postid')
+    .get((req, res) => {
+        if (req.headers.authorization) {
+            let auth = req.headers.authorization.split(' ');
+            if (auth[0] == "Bearer") {
+                let user = jwt.decode(auth[1], config.secret);
+                UPR.findOne({
+                    userID: user.id,
+                    postID: req.params.postid
+                }, (err, uprelation) => {
+                    if (!err) {
+                        if (uprelation == null) {
+                            res.send(false);
+                        } else {
+                            res.send(true);
+                        }
+                    } else {
+                        res.sendStatus(500);
+                    }
+                });
+            }
+        }
     })
+    .put((req, res) => {
+        if (req.headers.authorization) {
+            let auth = req.headers.authorization.split(' ');
+            if (auth[0] == "Bearer") {
+                let user = jwt.decode(auth[1], config.secret);
+                UPR.findOne({
+                    userID: user.id,
+                    postID: req.params.postid
+                }, (UPRrelationError, uprelation) => {
+                    if (!UPRrelationError) {
+                        if (uprelation == null) {
+                            let newUPR = new UPR({
+                                userID: user.id,
+                                postID: req.params.postid
+                            });
+                            newUPR.save((UPRrelationSaveError) => {
+                                if (UPRrelationError) throw err;
+                                res.status(200).send('samed');
+                            });
+                        } else {
+                            uprelation.remove((err) => {
+                                if (err) throw err;
+                                res.status(200).send('unsamed');
+                            });
+                        }
+                    } else {
+                        res.sendStatus(500);
+                    }
+                })
+
+            }
+        }
+    })
+    .delete((req, res) => {
+        if (req.headers.authorization) {
+            let auth = req.headers.authorization.split(' ');
+            if (auth[0] == "Bearer") {
+                let user = jwt.decode(auth[1], config.secret);
+                async.waterfall([
+                    (callback) => {
+                        Post.findById(req.params.postid, (err, post) => {
+                            if (!err) {
+                                if (post) {
+                                    if (post.byID == user.id) {
+                                        return callback(null, post);
+                                    } else {
+                                        return callback(true, 'not your post');
+                                    }
+                                } else {
+                                    return callback(true, 'post not found');
+                                }
+                            } else {
+                                throw err;
+                            }
+                        })
+                    }, (post, callback) => {
+                        UPR.find({
+                            postID: post._id
+                        }).remove((err) => {
+                            if (err) throw err;
+                            return callback(null, post);
+                        })
+                    }, (post, callback) => {
+                        post.remove((err) => {
+                            if (err) throw err;
+                            return callback(null, 'post removed');
+                        })
+                    }
+                ], (err, callback) => {
+                    if (err) {
+                        res.status(500).send(callback);
+                    } else {
+                        res.status(200).send(callback);
+                    }
+                });
+            }
+        }
+    });
+
+app.route('/post/:postid/count')
+    .get((req, res) => {
+        UPR.find({
+            postID: req.params.postid
+        }).count((err, count) => {
+            if (err) throw err;
+            res.status(200).send(count.toString());
+        });
+    });
+
 app.route('/follow/:followid')
     .put((req, res) => {
         if (req.headers.authorization) {
@@ -417,15 +624,67 @@ app.route('/follow/:followid')
                             });
                             newuur.save((err) => {
                                 if (!err) {
-                                    res.status(200).send('followed');
+                                    Post.find({
+                                        byID: req.params.followid
+                                    }, (err, posts) => {
+                                        if (err) throw err;
+                                        if (posts.length > 0) {
+                                            async.map(posts, (post, callback) => {
+                                                let newFeed = new Feed({
+                                                    followerID: user.id,
+                                                    postID: post._id,
+                                                    date: post.posted
+                                                });
+                                                newFeed.save(err => {
+                                                    if (err) throw err;
+                                                    callback(null);
+                                                })
+                                            }, (err, callback) => {
+                                                if (err) throw err;
+                                                res.status(200).send('followed');
+                                            });
+                                        } else {
+                                            res.status(200).send('followed');
+                                        }
+                                    })
                                 } else {
                                     throw err;
                                 }
                             });
                         } else {
-                            uur.remove((err) => {
+                            uur.remove((err, uurelation) => {
                                 if (err) throw err;
-                                res.status(200).send('unfollowed');
+
+                                Feed.find({
+                                    followerID: user.id
+                                }, (err, feeds) => {
+                                    if (err) throw err;
+                                    if (feeds.length > 0) {
+                                        async.map(feeds, (feed, callback) => {
+                                            Post.findById(feed.postID, (err, post) => {
+                                                if (err) throw err;
+                                                if (post) {
+                                                    if (post.byID == uurelation.followsID) {
+                                                        feed.remove(err => {
+                                                            if (err) throw err;
+                                                            return callback(null);
+                                                        });
+                                                    } else {
+                                                        return callback(null);
+
+                                                    }
+                                                } else {
+                                                    return callback(null);
+                                                }
+                                            });
+                                        }, (err, callback) => {
+                                            if (err) throw err;
+                                            res.status(200).send('unfollowed');
+                                        });
+                                    } else {
+                                        res.status(200).send('unfollowed')
+                                    }
+                                });
                             })
                         }
                     } else {
@@ -462,72 +721,42 @@ app.route('/follow/:followid')
         }
     });
 
-/* SAME */
-app.route('/post/:postid')
-    .put((req, res) => {
-        if (req.headers.authorization) {
-            let auth = req.headers.authorization.split(' ');
-            if (auth[0] == "Bearer") {
-                let user = jwt.decode(auth[1], config.secret);
-                UPR.findOne({
-                    userID: user.id,
-                    postID: req.params.postid
-                }, (UPRrelationError, uprelation) => {
-                    if (!UPRrelationError) {
-                        if (uprelation == null) {
-                            let newUPR = new UPR({
-                                userID: user.id,
-                                postID: req.params.postid
-                            });
-                            newUPR.save((UPRrelationSaveError) => {
-                                if (UPRrelationError) throw err;
-                                res.status(200).send('samed');
-                            });
-                        } else {
-                            uprelation.remove((err) => {
-                                if (err) throw err;
-                                res.status(200).send('unsamed');
-                            });
-                        }
-                    } else {
-                        res.sendStatus(500);
-                    }
-                })
 
-            }
-        }
-    })
+/* FEED */
+app.route('/feed')
     .get((req, res) => {
         if (req.headers.authorization) {
             let auth = req.headers.authorization.split(' ');
             if (auth[0] == "Bearer") {
                 let user = jwt.decode(auth[1], config.secret);
-                UPR.findOne({
-                    userID: user.id,
-                    postID: req.params.postid
-                }, (err, uprelation) => {
-                    if (!err) {
-                        if (uprelation == null) {
-                            res.send(false);
-                        } else {
-                            res.send(true);
-                        }
+                Feed.find({
+                    followerID: user.id
+                }).sort({
+                    date: -1
+                }).exec((err, feeds) => {
+                    if (err) throw err;
+                    if (feeds.length > 0) {
+                        async.map(feeds, (feed, callback) => {
+                            Post.findById(feed.postID, (err, post) => {
+                                if (err) throw err;
+                                if (post) {
+                                    return callback(null, post);
+                                } else {
+                                    return callback(null);
+                                }
+                            })
+                        }, (err, posts) => {
+                            if (err) throw err;
+                            res.status(200).json(posts);
+                        });
                     } else {
-                        res.sendStatus(500);
+                        res.status(404).send('there are no posts');
                     }
                 });
             }
         }
-    });
-app.route('/post/:postid/count')
-    .get((req, res) => {
-        UPR.find({
-            postID: req.params.postid
-        }).count((err, count) => {
-            if (err) throw err;
-            res.status(200).send(count.toString());
-        });
-    });
+    })
+
 /* SEARCH */
 app.route('/search')
     .get((req, res) => {
@@ -547,7 +776,6 @@ app.route('/search')
             res.status(401).send('empty search');
         }
     });
-
 
 /* START SERVER */
 app.listen(config.port, () => {

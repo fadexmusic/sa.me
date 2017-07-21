@@ -17,15 +17,18 @@ export class UserService {
   }
 
   getUser(name: string): Observable<any> {
-    return this.http.get(serverAdress + this.uri + name).map(res => res.json());
+    return this.http.get(serverAdress + this.uri + name + '?by=name').map(res => res.json());
+  }
+  getUserById(id: string): Observable<any> {
+    return this.http.get(serverAdress + this.uri + id + '?by=id').map(res => res.json());
   }
   getPosts(id: string): Observable<any> {
     return this.http.get(serverAdress + 'posts/' + id).map(res => res.json());
   }
-  followerCount(id: string): Observable<any>{
+  followerCount(id: string): Observable<any> {
     return this.http.get(serverAdress + 'followers/' + id + '/count').map(res => res.text());
   }
-  followingCount(id: string): Observable<any>{
+  followingCount(id: string): Observable<any> {
     return this.http.get(serverAdress + 'following/' + id + '/count').map(res => res.text());
   }
   changeFollow(id: string): Observable<any> {

@@ -6,6 +6,8 @@ var userpostRelationSchema = new Schema({
   postID: { type: String, required: true }
 });
 
+userpostRelationSchema.index({userID: 1});
+
 var UserpostRelation = mongoose.model('Userpostrelation', userpostRelationSchema);
 
 module.exports = UserpostRelation;

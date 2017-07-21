@@ -25,6 +25,7 @@ var userSchema = new Schema({
     default: ""
   }
 });
+userSchema.index({username: 1})
 
 var User = mongoose.model('User', userSchema);
 

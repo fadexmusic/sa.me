@@ -1,5 +1,5 @@
-<h2 style="margin-bottom: 10px">your follows</h2>
-<div *ngFor="let follow of follows" style="width: 100%; margin-top: 5px; font-size: 1.2rem">
-  <a [routerLink]="['/'+follow.username]"><img src="{{ follow.avatar }}" width="30px">
-  {{follow.username}}</a>
+<div *ngIf="loaded">
+  <div *ngFor="let post of posts">
+    <post [post]="post" [index]="i" (delete)="deletePost($event)"></post>
+  </div>
 </div>

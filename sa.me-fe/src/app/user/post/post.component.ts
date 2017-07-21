@@ -2,7 +2,7 @@ import { PostService } from './post.service';
 import { User } from './../user.service';
 import { UserService } from './../user.service';
 import { AuthService } from './../../services/auth.service';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'post',
@@ -11,12 +11,15 @@ import { Component, OnInit, Input } from '@angular/core';
   providers: [PostService]
 })
 export class PostComponent implements OnInit {
-
+  @Input() index: number;
   @Input() post: Post;
-  @Input() user: any;
+  @Output() delete: EventEmitter<number> = new EventEmitter();
+  user: any;
   samed: boolean = false;
   sameCount: number = 0;
   posted: String;
+  isMe: boolean = false;
+  loaded: boolean = false;
   aDay = 24 * 60 * 60 * 1000;
 
   constructor(public auth: AuthService, private us: UserService, private ps: PostService) {
@@ -24,6 +27,18 @@ export class PostComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.us.getUserById(this.post.byID).subscribe(res => {
+      this.user = res;
+      if (this.auth.loggedIn()) {
+        if (this.user._id == this.auth.user.id) {
+          this.isMe = true;
+        } else {
+          this.isMe = false;
+        }
+      }
+      this.loaded = true;
+    })
+
     this.ps.getSameCount(this.post._id).subscribe(res => {
       this.sameCount = res;
     });
@@ -48,7 +63,13 @@ export class PostComponent implements OnInit {
       });
     }
   }
-
+  remove(): void {
+    if (this.auth.loggedIn()) {
+      this.ps.removePost(this.post._id).subscribe(res => {
+        this.delete.emit(this.index);
+      });
+    }
+  }
 
   timeSince(date: Date) {
 

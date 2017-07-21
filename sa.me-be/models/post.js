@@ -24,6 +24,8 @@ var postSchema = new Schema({
     }
 });
 
+postSchema.index({byID : 1, posted: -1});
+
 var Post = mongoose.model('Post', postSchema);
 
 module.exports = Post;

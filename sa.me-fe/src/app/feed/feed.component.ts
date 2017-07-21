@@ -1,3 +1,4 @@
+import { UserService } from './../user/user.service';
 import { FeedService } from './feed.service';
 import { TokenUtil } from './../util/token.util';
 import { AuthService } from './../services/auth.service';
@@ -8,18 +9,21 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-feed',
   templateUrl: './feed.component.html',
   styleUrls: ['./feed.component.scss'],
-  providers: [FeedService]
+  providers: [FeedService, UserService]
 })
 export class FeedComponent implements OnInit {
-  follows: any = [];
+  posts: any = [];
+  loaded: boolean;
   constructor(private router: Router, private auth: AuthService, private fs: FeedService) { }
 
   ngOnInit() {
-    if(this.auth.loggedIn()){
-      this.fs.follows().subscribe(res => {
-        this.follows = res;
+    if (this.auth.loggedIn()) {
+      this.fs.getFeed().subscribe(res => {
+        console.log(res);
+        this.posts = res;
+        this.loaded = true;
       });
-    } 
+    }
   }
 
 }

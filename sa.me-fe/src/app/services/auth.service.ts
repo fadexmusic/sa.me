@@ -20,7 +20,7 @@ export class AuthService {
     }
   }
 
-  login(userInfo: User): Observable<any> {
+  login(userInfo: Login): Observable<any> {
     let headers: Headers = new Headers();
     headers.append('Content-Type', 'application/json');
     return this.http.post(serverAdress + 'login', JSON.stringify(userInfo), new RequestOptions({ headers: headers }))
@@ -53,4 +53,8 @@ export class AuthService {
   getAuthConfig(): AuthConfig {
     return new AuthConfig({ tokenGetter: (() => this.token) });
   }
+}
+export interface Login{
+  username: string;
+  password: string;
 }

@@ -1,19 +1,34 @@
 <div *ngIf="loaded">
-  <div id="head">
-    <div id="user-info">
-      <div id="avatar">
-        <img src="{{user.avatar}}">
+  <div id="head" [ngClass]="{bioh: user.bio!=''}">
+    <div id="user-info" [ngClass]="{bioh: user.bio!=''}">
+      <div id="avatar" [ngClass]="{biow: user.bio!=''}">
+        <img src="{{user.avatar}}" [ngClass]="{biow: user.bio!=''}">
       </div>
       <div id="info">
-        <div id="username">
-          <h1>
-            {{ user.username }}
-          </h1>
+        <div id="with-bio" *ngIf="user.bio!=''">
+          <div id="username">
+            <h1>
+              {{ user.username }}
+            </h1>
+          </div>
+          <div id="followers">
+            <h3>
+              / <b>{{ followers }}</b> <span *ngIf="followers==1">follower</span><span *ngIf="followers!=1">followers</span>              / <b>{{ following }}</b> following
+            </h3>
+          </div>
+          <div id="bio">{{user.bio}}</div>
         </div>
-        <div id="followers">
-          <h3>
-            / <b>{{ followers }}</b> <span *ngIf="followers==1">follower</span><span *ngIf="followers!=1">followers</span> / <b>{{ following }}</b> following
-          </h3>
+        <div *ngIf="user.bio==''" id="followers">
+          <div id="username">
+            <h1>
+              {{ user.username }}
+            </h1>
+          </div>
+          <div>
+            <h3>
+              / <b>{{ followers }}</b> <span *ngIf="followers==1">follower</span><span *ngIf="followers!=1">followers</span>              / <b>{{ following }}</b> following
+            </h3>
+          </div>
         </div>
       </div>
       <div id="options" *ngIf="auth.loggedIn()">
@@ -27,7 +42,7 @@
       </div>
     </div>
   </div>
-  <div *ngFor="let post of posts">
-    <post [post]="post" [user]="user"></post>
+  <div *ngFor="let post of posts; let i = index">
+    <post [post]="post" [index]="i" (delete)="deletePost($event)"></post>
   </div>
 </div>

@@ -22,7 +22,7 @@ export class UserComponent implements OnInit {
   following: number = 0;
 
   unfollowButton: string = 'following';
-  constructor(private router: Router, private route: ActivatedRoute, private auth: AuthService, private us: UserService, private tokenUtil: TokenUtil) { }
+  constructor(private router: Router, private route: ActivatedRoute, private auth: AuthService, private us: UserService) { }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -39,7 +39,7 @@ export class UserComponent implements OnInit {
           this.loaded = true;
         });
         if (this.auth.loggedIn()) {
-          if (this.user._id == this.tokenUtil.getUser(this.auth.token).id) {
+          if (this.user._id == this.auth.user.id) {
             this.isMe = true;
           } else {
             this.isMe = false;
@@ -57,6 +57,7 @@ export class UserComponent implements OnInit {
   }
   changeFollow(): void {
     this.us.changeFollow(this.user._id).subscribe(res => {
+      console.log(res.text())
       if (res.text() == 'followed') {
         this.followers++;
         this.follows = true;
@@ -65,6 +66,9 @@ export class UserComponent implements OnInit {
         this.follows = false;
       }
     });
+  }
+  deletePost(index: number){
+    this.posts.splice(index, 1);
   }
 }
 

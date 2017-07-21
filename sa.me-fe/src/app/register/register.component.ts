@@ -1,3 +1,4 @@
+import { AuthService } from './../services/auth.service';
 import { Router } from '@angular/router';
 import { RegisterService } from './register.service';
 import { Component, OnInit } from '@angular/core';
@@ -19,7 +20,7 @@ export class RegisterComponent implements OnInit {
     password: { valid: true, message: '' },
     confirmPassword: { valid: true, message: '' }
   }
-  constructor(private rs: RegisterService, private fb: FormBuilder, private router: Router) {
+  constructor(private rs: RegisterService, private fb: FormBuilder, private router: Router, private auth: AuthService) {
     this.registerForm = fb.group({
       username: ['', Validators.required],
       email: ['', Validators.required],
@@ -42,7 +43,11 @@ export class RegisterComponent implements OnInit {
     if (this.registerForm.valid) {
       if (this.registerForm.get('password').value == this.registerForm.get('confirmPassword').value) {
         this.rs.register(this.registerForm.value).subscribe(res => {
-          this.router.navigate(['login']);
+          this.auth.login({ username: this.registerForm.get('username').value, password: this.registerForm.get('password').value }).subscribe(res => {
+            if (res) {
+              location.href = '/feed';
+            }
+          });
         }, err => {
           switch (err.text()) {
             case "username taken":

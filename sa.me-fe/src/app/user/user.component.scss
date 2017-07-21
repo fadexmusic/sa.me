@@ -1,5 +1,6 @@
 @import '../../assets/variables';
 $info-height: 50px;
+$info-height-big: 80px;
 #head {
   border-bottom: 1px solid lighten($main, 70%);
   width: 100%;
@@ -24,20 +25,49 @@ $info-height: 50px;
     height: $info-height;
     line-height: $info-height;
     vertical-align: top;
+    div{
+      display:inline-block;
+    }
     #username {
-      margin-left: 10px;
+      margin-left: 8px;
+      display: inline-block;
     }
     #followers {
-      margin-left: 10px;
+      display: inline-block;
       color: lighten($main, 30%);
-      b{
+      b {
         font-weight: 400;
       }
     }
+    #with-bio {
+      div {
+        height: $info-height;
+      }
+      #bio {
+        display: block;
+        height: $info-height/2;
+        line-height: $info-height/2;
+        vertical-align: middle;
+        margin-left: 10px;
+        position: relative;
+        top: -8px;
+        vertical-align: top;
+        font-weight: 300;
+        font-size: 1rem;
+      }
+    }
   }
-  #options{
+  #options {
     position: absolute;
     right: 0;
     bottom: 10px;
   }
+}
+
+.biow {
+  height: $info-height-big !important;
+  width: $info-height-big !important;
+}
+.bioh {
+  height: $info-height-big !important;
 }
