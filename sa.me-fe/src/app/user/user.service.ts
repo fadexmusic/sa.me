@@ -22,8 +22,8 @@ export class UserService {
   getUserById(id: string): Observable<any> {
     return this.http.get(serverAdress + this.uri + id + '?by=id').map(res => res.json());
   }
-  getPosts(id: string): Observable<any> {
-    return this.http.get(serverAdress + 'posts/' + id).map(res => res.json());
+  getPosts(id: string, offset: number, limit: number): Observable<any> {
+    return this.http.get(serverAdress + 'posts/' + id + '?offset=' + offset + '&limit=' + limit).map(res => res.json());
   }
   followerCount(id: string): Observable<any> {
     return this.http.get(serverAdress + 'followers/' + id + '/count').map(res => res.text());

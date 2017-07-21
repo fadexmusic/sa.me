@@ -1,3 +1,4 @@
+import { perPage } from './../app.config';
 import { AuthService } from './../services/auth.service';
 import { TokenUtil } from './../util/token.util';
 import { Post } from './post/post.component';
@@ -21,6 +22,9 @@ export class UserComponent implements OnInit {
   followers: number = 0;
   following: number = 0;
 
+  offset: number = 0;
+  more: boolean = true;
+
   unfollowButton: string = 'following';
   constructor(private router: Router, private route: ActivatedRoute, private auth: AuthService, private us: UserService) { }
 
@@ -34,7 +38,10 @@ export class UserComponent implements OnInit {
         this.us.followingCount(this.user._id).subscribe(count => {
           this.following = count;
         });
-        this.us.getPosts(this.user._id).subscribe(res => {
+        this.us.getPosts(this.user._id, 0, perPage).subscribe(res => {
+          if (res.length < perPage) {
+            this.more = false;
+          }
           this.posts = res;
           this.loaded = true;
         });
@@ -57,7 +64,6 @@ export class UserComponent implements OnInit {
   }
   changeFollow(): void {
     this.us.changeFollow(this.user._id).subscribe(res => {
-      console.log(res.text())
       if (res.text() == 'followed') {
         this.followers++;
         this.follows = true;
@@ -67,8 +73,17 @@ export class UserComponent implements OnInit {
       }
     });
   }
-  deletePost(index: number){
+  deletePost(index: number) {
     this.posts.splice(index, 1);
+  }
+  loadMore(): void {
+    this.offset += perPage;
+    this.us.getPosts(this.user._id, this.offset, perPage).subscribe(res => {
+      if (res.length < perPage) {
+        this.more = false;
+      }
+      this.posts = this.posts.concat(res);
+    });
   }
 }
 

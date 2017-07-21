@@ -1,3 +1,4 @@
+import { perPage } from './../app.config';
 import { UserService } from './../user/user.service';
 import { FeedService } from './feed.service';
 import { TokenUtil } from './../util/token.util';
@@ -14,16 +15,30 @@ import { Component, OnInit } from '@angular/core';
 export class FeedComponent implements OnInit {
   posts: any = [];
   loaded: boolean;
+  offset: number = 0;
+  more: boolean = true;
   constructor(private router: Router, private auth: AuthService, private fs: FeedService) { }
 
   ngOnInit() {
     if (this.auth.loggedIn()) {
-      this.fs.getFeed().subscribe(res => {
-        console.log(res);
+      this.fs.getFeed(0, perPage).subscribe(res => {
+        if (res.length < perPage) {
+          this.more = false;
+        }
         this.posts = res;
         this.loaded = true;
       });
     }
   }
-
+  loadMore(): void {
+    if (this.auth.loggedIn()) {
+      this.offset += perPage;
+      this.fs.getFeed(this.offset, perPage).subscribe(res => {
+        if (res.length < perPage) {
+          this.more = false;
+        }
+        this.posts = this.posts.concat(res);
+      });
+    }
+  }
 }

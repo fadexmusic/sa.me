@@ -8,13 +8,13 @@ import { RequestOptions, Headers } from "@angular/http";
 @Injectable()
 export class FeedService {
 
- options: RequestOptions = new RequestOptions()
+  options: RequestOptions = new RequestOptions()
   constructor(private http: AuthHttp, private auth: AuthService) {
     let headers: Headers = new Headers();
     headers.append('Content-Type', 'application/json');
     this.options = new RequestOptions({ headers: headers });
   }
-  getFeed(): Observable<any>{
-    return this.http.get(serverAdress + 'feed').map(res => res.json());
+  getFeed(offset: number, limit: number): Observable<any> {
+    return this.http.get(serverAdress + 'feed?offset=' + offset + '&limit=' + limit).map(res => res.json());
   }
 }

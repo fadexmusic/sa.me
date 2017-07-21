@@ -1,0 +1,10 @@
+@import '../../assets/variables';
+
+#load-more{
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+}
+#no-more{
+    color: lighten($main, 70%);
+}

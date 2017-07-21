@@ -25,8 +25,8 @@ $info-height-big: 80px;
     height: $info-height;
     line-height: $info-height;
     vertical-align: top;
-    div{
-      display:inline-block;
+    div {
+      display: inline-block;
     }
     #username {
       margin-left: 8px;
@@ -68,6 +68,16 @@ $info-height-big: 80px;
   height: $info-height-big !important;
   width: $info-height-big !important;
 }
+
 .bioh {
   height: $info-height-big !important;
+}
+
+#load-more {
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
+}
+#no-more{
+    color: lighten($main, 70%);
 }

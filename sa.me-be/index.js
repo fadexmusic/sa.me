@@ -365,7 +365,7 @@ app.route('/posts/:userid')
     .get((req, res) => {
         Post.find({
             byID: req.params.userid
-        }).sort({
+        }).skip(parseInt(req.query.offset)).limit(parseInt(req.query.limit)).sort({
             posted: -1
         }).exec((err, posts) => {
             if (!err) {
@@ -731,7 +731,7 @@ app.route('/feed')
                 let user = jwt.decode(auth[1], config.secret);
                 Feed.find({
                     followerID: user.id
-                }).sort({
+                }).skip(parseInt(req.query.offset)).limit(parseInt(req.query.limit)).sort({
                     date: -1
                 }).exec((err, feeds) => {
                     if (err) throw err;
@@ -750,13 +750,12 @@ app.route('/feed')
                             res.status(200).json(posts);
                         });
                     } else {
-                        res.status(404).send('there are no posts');
+                        res.status(404).send('there are no more posts');
                     }
                 });
             }
         }
     })
-
 /* SEARCH */
 app.route('/search')
     .get((req, res) => {
