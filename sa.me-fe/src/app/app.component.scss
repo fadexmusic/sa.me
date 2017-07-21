@@ -2,7 +2,15 @@
 #content {
   width: 800px;
   margin: 0 auto;
-  margin-bottom: 50px;
+}
+footer{
+  width: 100%;
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 25px;
+  padding-top: 20px;
+  color: lighten($main, 40%);
+  border-top: 1px solid lighten($main, 80%);
 }
 
 @media screen and (max-width: 845px) {
@@ -10,5 +18,4 @@
     width: 100%;
     padding: 0 10px;
   }
-  
 }

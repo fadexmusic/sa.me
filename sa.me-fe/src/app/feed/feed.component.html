@@ -4,3 +4,6 @@
   </div>
   <div id="load-more"><a (click)="loadMore()" *ngIf="more">load more</a> <span id="no-more" *ngIf="!more">no more posts</span></div>
 </div>
+<div *ngIf="!loaded">
+  <h3 id="sad">you're different from everyone :(, follow someone</h3>
+</div>

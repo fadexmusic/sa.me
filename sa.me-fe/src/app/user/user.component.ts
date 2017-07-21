@@ -75,6 +75,12 @@ export class UserComponent implements OnInit {
   }
   deletePost(index: number) {
     this.posts.splice(index, 1);
+    this.us.getPosts(this.user._id, this.offset, perPage).subscribe(res => {
+      if (res.length < perPage) {
+        this.more = false;
+      }
+      this.posts = res;
+    });
   }
   loadMore(): void {
     this.offset += perPage;

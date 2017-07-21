@@ -2,12 +2,14 @@
   <form #searchRes [formGroup]="searchForm" (clickOutside)="close()" [attachOutsideOnClick]="attachOutsideOnClick">
     <input type="text" placeholder="search" [formControl]="searchForm.controls['query']">
     <div id="results" *ngIf="results!=undefined && results!=null && results.length!=0">
-      <div class="search-result" *ngFor="let result of results">
-        <a [routerLink]="['/' + result.username]" (click)="results=null">
-          <div class="avatar"><img src="{{ result.avatar }}" alt="{{ result.username }}"></div>
-          <div class="username">{{ result.username }}</div>
-        </a>
-      </div>
+      <a *ngFor="let result of results" [routerLink]="['/' + result.username]" (click)="results=null">
+        <div class="search-result">
+          <div>
+            <div class="avatar"><img src="{{ result.avatar }}" alt="{{ result.username }}"></div>
+            <div class="username"><span>{{ result.username }}</span></div>
+          </div>
+        </div>
+      </a>
     </div>
   </form>
 </div>

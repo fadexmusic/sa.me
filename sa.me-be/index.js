@@ -274,7 +274,7 @@ app.route('/user')
                     (user, callback) => {
                         UUR.find({
                             followerID: user._id
-                        }).remove((err) => {
+                        }).remove((err, urd) => {
                             if (err) throw err;
                             callback(null, user);
                         });
@@ -285,6 +285,28 @@ app.route('/user')
                         }).remove((err) => {
                             if (err) throw err;
                             callback(null, user);
+                        });
+                    },
+                    (user, callback) => {
+                        Post.find({
+                            byID: user._id
+                        }, (err, posts) => {
+                            if (err) throw err;
+                            if (posts.length > 0) {
+                                async.map(posts, (post, cb) => {
+                                    Feed.find({
+                                        postID: post._id
+                                    }).remove((err) => {
+                                        if (err) throw err;
+                                        cb(null);
+                                    });
+                                }, (err, cb) => {
+                                    if (err) throw err;
+                                    callback(null, user);
+                                });
+                            } else {
+                                callback(null, user);
+                            }
                         });
                     },
                     (user, callback) => {
@@ -578,6 +600,13 @@ app.route('/post/:postid')
                         }).remove((err) => {
                             if (err) throw err;
                             return callback(null, post);
+                        })
+                    }, (post, callback) => {
+                        Feed.find({
+                            postID: post._id
+                        }).remove((err) => {
+                            if (err) throw err;
+                            return callback(null, post)
                         })
                     }, (post, callback) => {
                         post.remove((err) => {
