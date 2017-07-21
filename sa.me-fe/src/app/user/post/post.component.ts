@@ -15,43 +15,40 @@ export class PostComponent implements OnInit {
   @Input() post: Post;
   @Input() user: any;
   samed: boolean = false;
+  sameCount: number = 0;
   posted: String;
   aDay = 24 * 60 * 60 * 1000;
 
-  constructor(public auth: AuthService, private us: UserService, private ps: PostService) { 
+  constructor(public auth: AuthService, private us: UserService, private ps: PostService) {
 
   }
 
   ngOnInit() {
-    
+    this.ps.getSameCount(this.post._id).subscribe(res => {
+      this.sameCount = res;
+    });
     this.posted = this.timeSince(new Date(new Date(this.post.posted))) + ' ago';
     if (this.auth.loggedIn()) {
       this.ps.samed(this.post._id).subscribe(res => {
-        this.samed = res.samed;
+        this.samed = res;
       });
     }
   }
 
-  same(): void {
+  changeSame(): void {
     if (this.auth.loggedIn()) {
-      if (!this.samed) {
-        this.ps.same(this.post._id).subscribe(res => {
+      this.ps.changeSame(this.post._id).subscribe(res => {
+        if (res.text() == 'samed') {
           this.samed = true;
-          this.post.sames++;
-        });
-      }else{
-        this.unsame();
-      }
-    }
-  }
-  unsame(): void {
-    if (this.auth.loggedIn()) {
-      this.ps.unsame(this.post._id).subscribe(res => {
-        this.samed = false;
-        this.post.sames--;
+          this.sameCount++;
+        } else if (res.text() == 'unsamed') {
+          this.samed = false;
+          this.sameCount--;
+        }
       });
     }
   }
+
 
   timeSince(date: Date) {
 

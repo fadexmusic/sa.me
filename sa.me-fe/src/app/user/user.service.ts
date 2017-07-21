@@ -1,7 +1,7 @@
+import { Observable } from 'rxjs';
 import { AuthHttp } from 'angular2-jwt/angular2-jwt';
 import { serverAdress } from './../app.config';
 import { Http, RequestOptions, Headers } from '@angular/http';
-import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 @Injectable()
@@ -22,14 +22,17 @@ export class UserService {
   getPosts(id: string): Observable<any> {
     return this.http.get(serverAdress + 'posts/' + id).map(res => res.json());
   }
-  follow(id: string): Observable<any> {
-    return this.ahttp.put(serverAdress + 'follow/' + id, JSON.stringify({ follow: 1 }), this.options);
+  followerCount(id: string): Observable<any>{
+    return this.http.get(serverAdress + 'followers/' + id + '/count').map(res => res.text());
+  }
+  followingCount(id: string): Observable<any>{
+    return this.http.get(serverAdress + 'following/' + id + '/count').map(res => res.text());
+  }
+  changeFollow(id: string): Observable<any> {
+    return this.ahttp.put(serverAdress + 'follow/' + id, null, this.options);
   }
   follows(id: string): Observable<any> {
     return this.ahttp.get(serverAdress + 'follow/' + id, this.options).map(res => res.json());
-  }
-  unfollow(id: string): Observable<any> {
-    return this.ahttp.put(serverAdress + 'follow/' + id, JSON.stringify({ follow: -1 }), this.options);
   }
 }
 export interface User {

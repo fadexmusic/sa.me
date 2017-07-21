@@ -23,14 +23,6 @@ var userSchema = new Schema({
   bio: {
     type: String,
     default: ""
-  },
-  followers: {
-    type: Number,
-    default: 0
-  },
-  following: {
-    type: Number,
-    default: 0
   }
 });
 

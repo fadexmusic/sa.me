@@ -21,10 +21,10 @@
   </div>
   <div class="info">
     <div class="amount">
-      <a>{{ post.sames }}</a>
-      <div *ngIf="post.sames!=1">people are the same</div>
-      <div *ngIf="post.sames==1">person is the same</div>
+      <a>{{ sameCount }}</a>
+      <div *ngIf="sameCount!=1">people are the same</div>
+      <div *ngIf="sameCount==1">person is the same</div>
     </div>
-    <div *ngIf="auth.loggedIn()" class="interact"><a *ngIf="!samed" (click)="same()">same</a><a *ngIf="samed" (click)="unsame()" class="unsame">unsame</a></div>
+    <div *ngIf="auth.loggedIn()" class="interact"><a *ngIf="!samed" (click)="changeSame()">same</a><a *ngIf="samed" (click)="changeSame()" class="unsame">unsame</a></div>
   </div>
 </div>

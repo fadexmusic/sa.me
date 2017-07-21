@@ -17,7 +17,10 @@ export class UserComponent implements OnInit {
   loaded: boolean = false;
   isMe: boolean = false;
   follows: boolean = false;
-  
+
+  followers: number = 0;
+  following: number = 0;
+
   unfollowButton: string = 'following';
   constructor(private router: Router, private route: ActivatedRoute, private auth: AuthService, private us: UserService, private tokenUtil: TokenUtil) { }
 
@@ -25,6 +28,12 @@ export class UserComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.us.getUser(params['username']).subscribe(res => {
         this.user = res;
+        this.us.followerCount(this.user._id).subscribe(count => {
+          this.followers = count;
+        });
+        this.us.followingCount(this.user._id).subscribe(count => {
+          this.following = count;
+        });
         this.us.getPosts(this.user._id).subscribe(res => {
           this.posts = res;
           this.loaded = true;
@@ -46,16 +55,15 @@ export class UserComponent implements OnInit {
       });
     });
   }
-  follow(): void {
-    this.us.follow(this.user._id).subscribe(res => {
-      this.user.followers++;
-      this.follows = true;
-    });
-  }
-  unfollow(): void{
-    this.us.unfollow(this.user._id).subscribe(res => {
-      this.user.followers--;
-      this.follows = false;
+  changeFollow(): void {
+    this.us.changeFollow(this.user._id).subscribe(res => {
+      if (res.text() == 'followed') {
+        this.followers++;
+        this.follows = true;
+      } else if (res.text() == 'unfollowed') {
+        this.followers--;
+        this.follows = false;
+      }
     });
   }
 }

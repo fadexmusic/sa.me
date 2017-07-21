@@ -12,17 +12,17 @@
         </div>
         <div id="followers">
           <h3>
-            / <b>{{ user.followers }}</b> followers / <b>{{user.following}}</b> following
+            / <b>{{ followers }}</b> <span *ngIf="followers==1">follower</span><span *ngIf="followers!=1">followers</span> / <b>{{ following }}</b> following
           </h3>
         </div>
       </div>
       <div id="options" *ngIf="auth.loggedIn()">
         <div *ngIf="!isMe">
-          <button *ngIf="!follows" (click)="follow()">follow</button>
-          <button *ngIf="follows" (click)="unfollow()" class="active" (mouseover)="unfollowButton='unfollow'" (mouseout)="unfollowButton='  following '">{{ unfollowButton }}</button>
+          <button *ngIf="!follows" (click)="changeFollow()">follow</button>
+          <button *ngIf="follows" (click)="changeFollow()" class="active" (mouseover)="unfollowButton='unfollow'" (mouseout)="unfollowButton='  following '">{{ unfollowButton }}</button>
         </div>
         <div *ngIf="isMe">
-         <a [routerLink]="['/edit']"><i class="fa fa-pencil" aria-hidden="true"></i> edit profile</a>
+          <a [routerLink]="['/edit']"><i class="fa fa-pencil" aria-hidden="true"></i> edit profile</a>
         </div>
       </div>
     </div>

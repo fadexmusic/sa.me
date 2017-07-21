@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { AuthService } from './../../services/auth.service';
 import { UserService } from './../user.service';
 import { EditService } from './edit.service';
@@ -33,7 +34,7 @@ export class EditComponent implements OnInit {
   deleteValid: any = {
     password: { valid: true, message: '' }
   }
-  constructor(private auth: AuthService, private fb: FormBuilder, private es: EditService) {
+  constructor(private auth: AuthService, private fb: FormBuilder, private es: EditService, private router: Router) {
     this.editPasswordForm = fb.group({
       newpassword: ['', Validators.required],
       newpasswordconfirm: ['', Validators.required],
@@ -152,7 +153,8 @@ export class EditComponent implements OnInit {
   deleteAccount(): void {
     if (this.deleteForm.valid) {
       this.es.deleteAccount(this.deleteForm.value).subscribe(res => {
-        console.log(res)
+        this.auth.logout();
+        this.router.navigate(['/login']);
       }, err => {
         switch (err.text()) {
           case 'wrong password':

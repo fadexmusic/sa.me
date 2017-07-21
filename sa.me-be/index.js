@@ -181,7 +181,10 @@ app.route('/user')
                             user.email = req.body.email;
                             user.save((err) => {
                                 if (!err) {
-                                    let token = jwt.encode({username: req.body.username, id: user.id}, config.secret);
+                                    let token = jwt.encode({
+                                        username: req.body.username,
+                                        id: user.id
+                                    }, config.secret);
                                     return callback(null, token)
                                 } else {
                                     switch (err.errmsg.split(' ')[7].split('_')[0]) {
@@ -218,7 +221,7 @@ app.route('/user')
                     if (err) {
                         res.status(401).send(callback);
                     } else {
-                        
+
                         res.status(200).send(callback);
                     }
                 });
@@ -253,8 +256,34 @@ app.route('/user')
                         })
                     },
                     (user, callback) => {
-                        //deletition
-                        
+                        UUR.find({
+                            followerID: user._id
+                        }).remove((err) => {
+                            if (err) throw err;
+                            callback(null, user);
+                        });
+                    },
+                    (user, callback) => {
+                        UPR.find({
+                            userID: user._id
+                        }).remove((err) => {
+                            if (err) throw err;
+                            callback(null, user);
+                        });
+                    },
+                    (user, callback) => {
+                        Post.find({
+                            byID: user._id
+                        }).remove((err) => {
+                            if (err) throw err;
+                            callback(null, user);
+                        });
+                    },
+                    (user, callback) => {
+                        user.remove(err => {
+                            if (err) throw err;
+                            callback(null, 'done');
+                        });
                     }
                 ], (err, callback) => {
                     if (err) {
@@ -297,7 +326,24 @@ app.route('/follows')
             }
         }
     });
-
+app.route('/followers/:userid/count')
+    .get((req, res) => {
+        UUR.find({
+            followsID: req.params.userid
+        }).count((err, count) => {
+            if (err) throw err;
+            res.status(200).send(count.toString());
+        });
+    });
+app.route('/following/:userid/count')
+    .get((req, res) => {
+        UUR.find({
+            followerID: req.params.userid
+        }).count((err, count) => {
+            if (err) throw err;
+            res.status(200).send(count.toString());
+        });
+    });
 /* POSTS */
 app.route('/posts/:userid')
     .get((req, res) => {
@@ -359,99 +405,33 @@ app.route('/follow/:followid')
             let auth = req.headers.authorization.split(' ');
             if (auth[0] == "Bearer") {
                 let user = jwt.decode(auth[1], config.secret);
-                if (req.body.follow == 1) {
-                    UUR.findOne({
-                        followerID: user.id,
-                        followsID: req.params.followid
-                    }, (uurfinderror, uur) => {
-                        if (!uurfinderror) {
-                            if (uur == null) {
-                                let newuur = new UUR({
-                                    followerID: user.id,
-                                    followsID: req.params.followid
-                                });
-                                newuur.save((uursaveerror) => {
-                                    if (!uursaveerror) {
-                                        User.findById(req.params.followid, (findfollowserror, follows) => {
-                                            if (!findfollowserror) {
-                                                follows.followers++;
-                                                follows.save(followersaverr => {
-                                                    if (!followersaverr) {
-                                                        User.findById(user.id, (findfollowererr, follower) => {
-                                                            if (!findfollowererr) {
-                                                                follower.following++;
-                                                                follower.save(followersaverr => {
-                                                                    if (!followersaverr) {
-                                                                        res.status(200).send('followed');
-                                                                    } else {
-                                                                        res.status(500).send('error saving follower');
-                                                                    }
-                                                                })
-                                                            } else {
-                                                                res.status(500).send('error finding follower');
-                                                            }
-                                                        })
-                                                    } else {
-                                                        res.status(500).send('error saving follows');
-                                                    }
-                                                })
-
-                                            } else {
-                                                res.status(500).send('error finding follow user');
-                                            }
-                                        });
-                                    } else {
-                                        res.status(500).send('error following');
-                                    }
-                                });
-                            } else {
-                                res.status(401).send('already followed');
-                            }
-                        } else {
-                            res.sendStatus(500);
-                        }
-                    });
-                } else if (req.body.follow == -1) {
-                    UUR.findOne({
-                        followerID: user.id,
-                        followsID: req.params.followid
-                    }).remove(uurfinderror => {
-                        if (!uurfinderror) {
-                            User.findById(req.params.followid, (userfinderr, user) => {
-                                if (!userfinderr) {
-                                    user.followers--;
-                                    user.save(usersaverr => {
-                                        if (!usersaverr) {
-                                            User.findById(user.id, (findfollowererr, follower) => {
-                                                if (!findfollowererr) {
-                                                    follower.following--;
-                                                    follower.save(followersaverr => {
-                                                        if (!followersaverr) {
-                                                            res.status(200).send('unfollowed');
-                                                        } else {
-                                                            res.status(500).send('error saving follower');
-                                                        }
-                                                    })
-                                                } else {
-                                                    res.status(500).send('error finding follower');
-                                                }
-                                            })
-                                        } else {
-                                            res.status(500).send('error saving follows');
-                                        }
-                                    });
+                UUR.findOne({
+                    followerID: user.id,
+                    followsID: req.params.followid
+                }, (uurfinderror, uur) => {
+                    if (!uurfinderror) {
+                        if (uur == null) {
+                            let newuur = new UUR({
+                                followerID: user.id,
+                                followsID: req.params.followid
+                            });
+                            newuur.save((err) => {
+                                if (!err) {
+                                    res.status(200).send('followed');
                                 } else {
-                                    res.status(500).send('user not found');
+                                    throw err;
                                 }
-                            })
+                            });
                         } else {
-                            res.status(401).send('error finding uur')
+                            uur.remove((err) => {
+                                if (err) throw err;
+                                res.status(200).send('unfollowed');
+                            })
                         }
-                    });
-                } else {
-                    res.status(401).send('no action');
-                }
-
+                    } else {
+                        res.sendStatus(500);
+                    }
+                });
             }
         }
     })
@@ -481,6 +461,7 @@ app.route('/follow/:followid')
             }
         }
     });
+
 /* SAME */
 app.route('/post/:postid')
     .put((req, res) => {
@@ -488,77 +469,31 @@ app.route('/post/:postid')
             let auth = req.headers.authorization.split(' ');
             if (auth[0] == "Bearer") {
                 let user = jwt.decode(auth[1], config.secret);
-
-                if (req.body.same == 1) {
-                    UPR.findOne({
-                        userID: user.id,
-                        postID: req.params.postid
-                    }, (UPRrelationError, uprelation) => {
-                        if (!UPRrelationError) {
-                            if (uprelation == null) {
-                                let newUPR = new UPR({
-                                    userID: user.id,
-                                    postID: req.params.postid
-                                });
-                                newUPR.save((UPRrelationSaveError) => {
-                                    if (!UPRrelationSaveError) {
-                                        Post.findById(req.params.postid, (AddSameError, post) => {
-                                            if (!AddSameError) {
-                                                post.sames++;
-                                                post.save(AddSameSaveError => {
-                                                    if (!AddSameSaveError) {
-                                                        res.status(200).send('post updated');
-                                                    } else {
-                                                        res.sendStatus(500);
-                                                    }
-                                                });
-                                            } else {
-                                                res.status(500).send('error getting posts');
-                                            }
-                                        });
-                                    } else {
-                                        res.sendStatus(500);
-                                    }
-                                });
-                            } else {
-                                res.status(400).send('already samed');
-                            }
-                        } else {
-                            res.sendStatus(500);
-                        }
-                    })
-                } else if (req.body.same == -1) {
-                    UPR.findOne({
-                        userID: user.id,
-                        postID: req.params.postid
-                    }).remove(uprfinderror => {
-                        if (!uprfinderror) {
-                            Post.findById(req.params.postid, (postfinderror, post) => {
-                                if (!postfinderror) {
-                                    if (post == null) {
-                                        res.status(404).send('post not found')
-                                    } else {
-                                        post.sames--;
-                                        post.save((err) => {
-                                            if (err) {
-                                                res.status(500).send('error updating post')
-                                            } else {
-                                                res.status(200).send('post updated');
-                                            }
-                                        });
-                                    }
-
-                                } else {
-                                    res.status(500).send();
-                                }
+                UPR.findOne({
+                    userID: user.id,
+                    postID: req.params.postid
+                }, (UPRrelationError, uprelation) => {
+                    if (!UPRrelationError) {
+                        if (uprelation == null) {
+                            let newUPR = new UPR({
+                                userID: user.id,
+                                postID: req.params.postid
+                            });
+                            newUPR.save((UPRrelationSaveError) => {
+                                if (UPRrelationError) throw err;
+                                res.status(200).send('samed');
                             });
                         } else {
-                            res.status(404).send('upr not found');
+                            uprelation.remove((err) => {
+                                if (err) throw err;
+                                res.status(200).send('unsamed');
+                            });
                         }
-                    });
-                } else {
-                    res.sendStatus(401);
-                }
+                    } else {
+                        res.sendStatus(500);
+                    }
+                })
+
             }
         }
     })
@@ -573,13 +508,9 @@ app.route('/post/:postid')
                 }, (err, uprelation) => {
                     if (!err) {
                         if (uprelation == null) {
-                            res.json({
-                                samed: false
-                            });
+                            res.send(false);
                         } else {
-                            res.json({
-                                samed: true
-                            });
+                            res.send(true);
                         }
                     } else {
                         res.sendStatus(500);
@@ -588,7 +519,15 @@ app.route('/post/:postid')
             }
         }
     });
-
+app.route('/post/:postid/count')
+    .get((req, res) => {
+        UPR.find({
+            postID: req.params.postid
+        }).count((err, count) => {
+            if (err) throw err;
+            res.status(200).send(count.toString());
+        });
+    });
 /* SEARCH */
 app.route('/search')
     .get((req, res) => {

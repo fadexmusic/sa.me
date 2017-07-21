@@ -21,14 +21,6 @@ var postSchema = new Schema({
     posted: {
         type: Date,
         default: Date.now
-    },
-    sames: {
-        type: Number,
-        default: 0
-    },
-    notsames: {
-        type: Number,
-        default: 0
     }
 });
 
