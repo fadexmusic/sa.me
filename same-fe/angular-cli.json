@@ -1,7 +1,7 @@
 {
-  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "project": {
-    "name": "sa.me-fe"
+    "version": "1.0.0-beta.28.3",
+    "name": "same-fe"
   },
   "apps": [
     {
@@ -15,8 +15,7 @@
       "main": "main.ts",
       "polyfills": "polyfills.ts",
       "test": "test.ts",
-      "tsconfig": "tsconfig.app.json",
-      "testTsconfig": "tsconfig.spec.json",
+      "tsconfig": "tsconfig.json",
       "prefix": "app",
       "styles": [
         "styles.scss",
@@ -25,6 +24,7 @@
       "scripts": [],
       "environmentSource": "environments/environment.ts",
       "environments": {
+        "source": "environments/environment.ts",
         "dev": "environments/environment.ts",
         "prod": "environments/environment.prod.ts"
       }
@@ -37,13 +37,12 @@
   },
   "lint": [
     {
-      "project": "src/tsconfig.app.json"
+      "files": "src/**/*.ts",
+      "project": "src/tsconfig.json"
     },
     {
-      "project": "src/tsconfig.spec.json"
-    },
-    {
-      "project": "e2e/tsconfig.e2e.json"
+      "files": "e2e/**/*.ts",
+      "project": "e2e/tsconfig.json"
     }
   ],
   "test": {
@@ -53,6 +52,18 @@
   },
   "defaults": {
     "styleExt": "scss",
-    "component": {}
+    "prefixInterfaces": false,
+    "inline": {
+      "style": false,
+      "template": false
+    },
+    "spec": {
+      "class": false,
+      "component": true,
+      "directive": true,
+      "module": false,
+      "pipe": true,
+      "service": true
+    }
   }
 }

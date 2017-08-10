@@ -22,6 +22,10 @@ export class PostComponent implements OnInit {
   loaded: boolean = false;
   aDay = 24 * 60 * 60 * 1000;
 
+  userlistOpen: boolean = false;
+  ulTitle: string = '';
+  userList: any[] = [];
+
   constructor(public auth: AuthService, private us: UserService, private ps: PostService) {
 
   }
@@ -49,6 +53,19 @@ export class PostComponent implements OnInit {
       });
     }
   }
+
+  public showSames(): void {
+    this.ps.getSamers(this.post._id).subscribe(res => {
+      this.userList = res;
+      this.ulTitle = 'samed by';
+      this.userlistOpen = true;
+    });
+  }
+
+  public closeUserlistPopup(): void {
+    this.userlistOpen = false;
+  }
+
 
   changeSame(): void {
     if (this.auth.loggedIn()) {

@@ -1,0 +1,17 @@
+<div id="popup-holder">
+  <div #popup id="popup">
+    <div id="popup-header">
+      <div>{{popupTitle}}</div><div><a (click)="close()"><i class="fa fa-times"></i></a></div>
+    </div>
+    <div id="popup-cont">
+      <a *ngFor="let item of userList" (click)="close()" [routerLink]="['/' + item.username]">
+        <div class="popup-item">
+          <div>
+            <div class="avatar"><img src="{{ item.avatar }}" alt="{{ item.username }}"></div>
+            <div class="username"><span>{{ item.username }}</span></div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>

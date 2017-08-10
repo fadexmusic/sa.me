@@ -39,6 +39,12 @@ $info-height-big: 80px;
       b {
         font-weight: 400;
       }
+      a{
+        color: lighten($main,30%);
+        &:hover{
+          color: lighten($main, 50%);
+        }
+      }
     }
     #with-bio {
       div {

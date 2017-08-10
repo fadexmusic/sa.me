@@ -37,6 +37,12 @@ export class UserService {
   follows(id: string): Observable<any> {
     return this.ahttp.get(serverAdress + 'follow/' + id, this.options).map(res => res.json());
   }
+  getFollowers(id: string): Observable<any> {
+    return this.ahttp.get(serverAdress + 'followers/' + id + '/list', this.options).map(res => res.json());
+  }
+  getFollowings(id: string): Observable<any> {
+    return this.ahttp.get(serverAdress + 'following/' + id + '/list', this.options).map(res => res.json());
+  }
 }
 export interface User {
   username: string;

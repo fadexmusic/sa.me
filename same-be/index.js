@@ -364,6 +364,22 @@ app.route('/follows')
             }
         }
     });
+app.route('/followers/:userid/list')
+    .get((req, res) => {
+        UUR.find({
+            followsID: req.params.userid
+        }, (err, uurs) => {
+            async.map(uurs, (uur, callback) => {
+                User.findById(uur.followerID, (userfinderror, user) => {
+                    if (userfinderror) throw err;
+                    callback(null, user);
+                })
+            }, (err, followers) => {
+                if (err) throw err;
+                res.status(200).json(followers);
+            })
+        });
+    });
 app.route('/followers/:userid/count')
     .get((req, res) => {
         UUR.find({
@@ -380,6 +396,22 @@ app.route('/following/:userid/count')
         }).count((err, count) => {
             if (err) throw err;
             res.status(200).send(count.toString());
+        });
+    });
+app.route('/following/:userid/list')
+    .get((req, res) => {
+        UUR.find({
+            followerID: req.params.userid
+        }, (err, uurs) => {
+            async.map(uurs, (uur, callback) => {
+                User.findById(uur.followsID, (userfinderror, user) => {
+                    if (userfinderror) throw err;
+                    callback(null, user);
+                })
+            }, (err, following) => {
+                if (err) throw err;
+                res.status(200).json(following);
+            })
         });
     });
 /* POSTS */
@@ -634,7 +666,21 @@ app.route('/post/:postid/count')
             res.status(200).send(count.toString());
         });
     });
-
+app.route('/post/:postid/list')
+    .get((req, res) => {
+       UPR.find({postID: req.params.postid}, (err, uprs) => {
+         if(err) throw err;
+         async.map(uprs, (upr, callback) => {
+            User.findById(upr.userID, (finderr, user) => {
+                if (finderr) throw finderr;
+                callback(null, user);
+            });
+         }, (err, users) => {
+            if(err) throw err;
+            res.status(200).json(users);
+         });
+       });
+    });
 app.route('/follow/:followid')
     .put((req, res) => {
         if (req.headers.authorization) {

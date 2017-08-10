@@ -25,6 +25,10 @@ export class UserComponent implements OnInit {
   offset: number = 0;
   more: boolean = true;
 
+  userlistOpen: boolean = false;
+  ulTitle: string = '';
+  userList: any[] = [];
+
   unfollowButton: string = 'following';
   constructor(private router: Router, private route: ActivatedRoute, private auth: AuthService, private us: UserService) { }
 
@@ -62,6 +66,26 @@ export class UserComponent implements OnInit {
       });
     });
   }
+
+  public showSamers(): void {
+    this.us.getFollowers(this.user._id).subscribe(res => {
+      this.userList = res;
+      this.ulTitle = 'samers';
+      this.userlistOpen = true;
+    });
+  }
+  public showSamings(): void {
+    this.us.getFollowings(this.user._id).subscribe(res => {
+      this.userList = res;
+      this.ulTitle = 'saming';
+      this.userlistOpen = true;
+    });
+  }
+
+  public closeUserlistPopup(): void {
+    this.userlistOpen = false;
+  }
+
   changeFollow(): void {
     this.us.changeFollow(this.user._id).subscribe(res => {
       if (res.text() == 'followed') {
@@ -91,5 +115,8 @@ export class UserComponent implements OnInit {
       this.posts = this.posts.concat(res);
     });
   }
+
+
+
 }
 

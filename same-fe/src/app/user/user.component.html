@@ -13,7 +13,7 @@
           </div>
           <div id="followers">
             <h3>
-              / <b>{{ followers }}</b> <span *ngIf="followers==1">samer</span><span *ngIf="followers!=1">samers</span>              / <b>{{ following }}</b> saming
+              / <a (click)="showSamers()"><b>{{ followers }}</b> <span *ngIf="followers==1">samer</span><span *ngIf="followers!=1">samers</span></a>              / <a (click)="showSamings()"><b>{{ following }}</b> saming</a>
             </h3>
           </div>
           <div id="bio">{{user.bio}}</div>
@@ -24,9 +24,9 @@
               {{ user.username }}
             </h1>
           </div>
-          <div>
+          <div id="followers">
             <h3>
-              / <b>{{ followers }}</b> <span *ngIf="followers==1">samer</span><span *ngIf="followers!=1">samers</span>              / <b>{{ following }}</b> saming
+              / <a (click)="showSamers()"><b>{{ followers }}</b> <span *ngIf="followers==1">samer</span><span *ngIf="followers!=1">samers</span></a>              / <a (click)="showSamings()"><b>{{ following }}</b> saming</a>
             </h3>
           </div>
         </div>
@@ -47,3 +47,4 @@
   </div>
   <div id="load-more"><a (click)="loadMore()" *ngIf="more">load more</a> <span id="no-more" *ngIf="!more">no more posts</span></div>
 </div>
+<app-user-list-popup *ngIf="userlistOpen" (end)="closeUserlistPopup()" [popupTitle]="ulTitle" [userList]="userList"></app-user-list-popup>

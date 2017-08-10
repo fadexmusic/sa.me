@@ -1,0 +1,77 @@
+@import '../../../assets/variables';
+#popup-holder {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  top: 0;
+  left: 0;
+  z-index: 50;
+  #popup {
+    background: white;
+    width: 500px;
+    height: 600px;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translate(0, -50%);
+    #popup-header {
+      width: 100%;
+      border-bottom: 1px solid darken($light, 5%);
+      color: lighten($main, 20%);
+      padding: 10px;
+      font-size: 1.2rem;
+      div {
+        display: inline-block;
+        width: 50%;
+        a {
+          color: lighten($main, 20%);
+          &:hover {
+            color: lighten($main, 30%);
+          }
+        }
+      }
+      div:last-child {
+        text-align: right;
+      }
+    }
+    #popup-cont {
+        
+      .popup-item {
+        text-align: left;
+        padding: 5px 10px;
+        color: $main;
+        transition: .2s all;
+        &:hover {
+          background: darken($light, 3%);
+        }
+        div {
+          line-height: 44px;
+          div {
+            line-height: 44px;
+            vertical-align: middle;
+            display: inline-block;
+            img {
+              height: 35px;
+              width: 35px;
+              margin-bottom: -10px;
+            }
+            &.username {
+              margin-left: 6px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-height: 635px) {
+  #popup-holder {
+    overflow-y: scroll;
+    #popup {
+      top: 20px;
+      transform: none;
+    }
+  }
+}
