@@ -7,6 +7,7 @@ var bcrypt = require('bcrypt');
 var jwt = require('jwt-simple');
 var config = require('./config.js');
 var async = require('async');
+var nodemailer = require('nodemailer');
 
 /* MODELS */
 var User = require('./models/user');
@@ -21,6 +22,15 @@ mongoose.Promise = global.Promise;
 mongoose.connect(config.dburl, {
     useMongoClient: true
 });
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'sa.me.socialnetwork@gmail.com',
+        pass: 'santis98'
+    }
+});
+
 
 /* USE */
 app.use(bodyParser.urlencoded({
@@ -71,6 +81,20 @@ app.route('/register')
                                 break;
                         }
                     } else {
+                        var mailOptions = {
+                            from: 'sa.me.socialnetwork@gmail.com',
+                            to: req.body.email,
+                            subject: 'Registration confirmation to sa.me',
+                            html: 'You were successfully registered under the name <b>' + req.body.username + '</b>, thanks and enjoy!'
+                        };
+
+                        transporter.sendMail(mailOptions, function (error, info) {
+                            if (error) {
+                                throw error;
+                            } else {
+                                
+                            }
+                        });
                         res.sendStatus(200);
                     }
                 });
@@ -668,18 +692,20 @@ app.route('/post/:postid/count')
     });
 app.route('/post/:postid/list')
     .get((req, res) => {
-       UPR.find({postID: req.params.postid}, (err, uprs) => {
-         if(err) throw err;
-         async.map(uprs, (upr, callback) => {
-            User.findById(upr.userID, (finderr, user) => {
-                if (finderr) throw finderr;
-                callback(null, user);
+        UPR.find({
+            postID: req.params.postid
+        }, (err, uprs) => {
+            if (err) throw err;
+            async.map(uprs, (upr, callback) => {
+                User.findById(upr.userID, (finderr, user) => {
+                    if (finderr) throw finderr;
+                    callback(null, user);
+                });
+            }, (err, users) => {
+                if (err) throw err;
+                res.status(200).json(users);
             });
-         }, (err, users) => {
-            if(err) throw err;
-            res.status(200).json(users);
-         });
-       });
+        });
     });
 app.route('/follow/:followid')
     .put((req, res) => {
@@ -850,6 +876,10 @@ app.route('/search')
             res.status(401).send('empty search');
         }
     });
+
+
+
+
 
 /* START SERVER */
 app.listen(config.port, () => {
