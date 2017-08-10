@@ -1,3 +1,4 @@
+import { NotificationService } from './../../components/notification/notification.service';
 import { Router } from '@angular/router';
 import { AuthService } from './../../services/auth.service';
 import { UserService } from './../user.service';
@@ -34,7 +35,7 @@ export class EditComponent implements OnInit {
   deleteValid: any = {
     password: { valid: true, message: '' }
   }
-  constructor(private auth: AuthService, private fb: FormBuilder, private es: EditService, private router: Router) {
+  constructor(private auth: AuthService, private fb: FormBuilder, private es: EditService, private router: Router, private ns: NotificationService) {
     this.editPasswordForm = fb.group({
       newpassword: ['', Validators.required],
       newpasswordconfirm: ['', Validators.required],
@@ -84,6 +85,7 @@ export class EditComponent implements OnInit {
 
     if (this.editForm.valid) {
       this.es.edit(this.editForm.value).subscribe(res => {
+        this.ns.pushNotification({type: 'success', message: 'profile info updated'});
         this.auth.setToken(res.text());
         this.editForm.get('password').reset();
       }, err => {
@@ -120,6 +122,7 @@ export class EditComponent implements OnInit {
     if (this.editPasswordForm.valid) {
       if (this.editPasswordForm.get('newpassword').value == this.editPasswordForm.get('newpasswordconfirm').value) {
         this.es.editPassword(this.editPasswordForm.value).subscribe(res => {
+          this.ns.pushNotification({type: 'success', message: 'password changed'});
           this.editPasswordForm.reset();
         }, err => {
           switch (err.text()) {
@@ -154,6 +157,7 @@ export class EditComponent implements OnInit {
     if (this.deleteForm.valid) {
       this.es.deleteAccount(this.deleteForm.value).subscribe(res => {
         this.auth.logout();
+        this.ns.pushNotification({type: 'success', message: 'account deleted'});
         this.router.navigate(['/login']);
       }, err => {
         switch (err.text()) {

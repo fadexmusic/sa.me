@@ -1,0 +1,6 @@
+<div id="notifications">
+  <!-- NOTIFICATION GENERATION -->
+  <div *ngFor="let notification of notifications" class="alert alert-{{notification.type}}">
+    <div><strong>{{notification.type}}!</strong> {{notification.message}}</div><div><a style="cursor: pointer" class="close" (click)="remove(notification)">&times;</a></div>
+  </div>
+</div>

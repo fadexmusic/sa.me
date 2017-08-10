@@ -7,7 +7,8 @@
     </a>
     <div class="name"><a [routerLink]="['/'+user.username]">{{ user.username }}</a> is like</div>
     <div class="ago">{{ posted }} </div>
-    <span *ngIf="isMe" class="remove"><a (click)="remove()">&times; </a></span>
+    <span *ngIf="isMe" class="remove"><a (click)="startRemoving()">&times; </a></span>
+    <app-confirmation *ngIf="removing" (confirmation)="remove($event)" [x]="removingX" [y]="removingY"></app-confirmation>
   </div>
   <div class="content">
     <div *ngIf="post.type=='image'">

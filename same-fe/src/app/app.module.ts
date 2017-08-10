@@ -1,3 +1,6 @@
+import { NotificationService } from './components/notification/notification.service';
+import { ConfirmationComponent } from './components/confirmation/confirmation.component';
+import { NotificationComponent } from './components/notification/notification.component';
 import { AuthHttp } from 'angular2-jwt/angular2-jwt';
 import { AuthGuard } from './auth.guard';
 import { NotFoundComponent } from './not-found/not-found.component';
@@ -41,7 +44,9 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions, as: 
     NewPostComponent,
     SearchComponent,
     EditComponent,
-    UserListPopupComponent
+    UserListPopupComponent,
+    NotificationComponent,
+    ConfirmationComponent
   ],
   imports: [
     BrowserModule,
@@ -60,7 +65,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions, as: 
       provide: AuthHttp,
       useFactory: authHttpServiceFactory,
       deps: [Http, RequestOptions, AuthService]
-    }
+    },
+    NotificationService
   ],
   bootstrap: [AppComponent]
 })

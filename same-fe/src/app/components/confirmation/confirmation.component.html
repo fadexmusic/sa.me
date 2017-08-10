@@ -1,0 +1,15 @@
+<div #confirmationPopup class="confirmation" style="display: block" [style.top]=" + y + 'px'" [style.left]="-70 + x + 'px'">
+  <div class="arrow"></div>
+  <h3 class="confirmation-title">delete?</h3>
+  <div class="popover-content">
+    <p class="confirmation-content" style="display: none;"></p>
+    <div class="confirmation-buttons text-center">
+      <div class="btn-group">
+        <a (click)="confirmed()" style="cursor: pointer" class="btn-confirm"><i
+          class="fa fa-check"></i> yes</a>
+        <a (click)="canceled()" class="btn-abort"><i
+					class="fa fa-times"></i> no</a>
+      </div>
+    </div>
+  </div>
+</div>

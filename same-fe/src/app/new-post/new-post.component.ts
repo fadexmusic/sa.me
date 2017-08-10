@@ -1,3 +1,4 @@
+import { NotificationService } from './../components/notification/notification.service';
 import { Router } from '@angular/router';
 import { NewPostService } from './new-post.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -23,7 +24,7 @@ export class NewPostComponent implements OnInit {
     content: { valid: true, message: '' },
     description: { valid: true, message: '' }
   };
-  constructor(private router: Router, private fb: FormBuilder, private ns: NewPostService) {
+  constructor(private router: Router, private fb: FormBuilder, private ns: NewPostService, private nos: NotificationService) {
     this.textForm = fb.group({
       content: ['', Validators.required]
     });
@@ -51,6 +52,7 @@ export class NewPostComponent implements OnInit {
   submitText(): void {
     if (this.textForm.valid) {
       this.ns.newTextPost(this.textForm.value).subscribe(res => {
+        this.nos.pushNotification({type: 'success', message: 'text posted'});
         this.router.navigate(['/feed']);
       });
     } else {
@@ -61,6 +63,7 @@ export class NewPostComponent implements OnInit {
   submitImage(): void {
     if (this.imageForm.valid) {
       this.ns.newImagePost(this.imageForm.value).subscribe(res => {
+        this.nos.pushNotification({type: 'success', message: 'image posted'});
         this.router.navigate(['/feed']);
       });
     } else {

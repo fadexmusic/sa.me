@@ -1,3 +1,4 @@
+import { NotificationService } from './../components/notification/notification.service';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Validators } from '@angular/forms';
@@ -40,7 +41,7 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
       this.auth.login(this.loginForm.value).subscribe(res => {
         if (res) {
-          location.href = '/feed';//this.router.navigate(['feed']);
+          this.router.navigate(['feed']);
         }
       }, err => {
         switch (err.text()) {

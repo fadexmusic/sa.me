@@ -1,3 +1,4 @@
+import { NotificationService } from './../../components/notification/notification.service';
 import { PostService } from './post.service';
 import { User } from './../user.service';
 import { UserService } from './../user.service';
@@ -26,7 +27,11 @@ export class PostComponent implements OnInit {
   ulTitle: string = '';
   userList: any[] = [];
 
-  constructor(public auth: AuthService, private us: UserService, private ps: PostService) {
+  removing: boolean = false;
+  removingX: number = 0;
+  removingY: number = 0;
+
+  constructor(public auth: AuthService, private us: UserService, private ps: PostService, private ns: NotificationService) {
 
   }
 
@@ -80,14 +85,26 @@ export class PostComponent implements OnInit {
       });
     }
   }
-  remove(): void {
-    if (this.auth.loggedIn()) {
-      this.ps.removePost(this.post._id).subscribe(res => {
-        this.delete.emit(this.index);
-      });
+  startRemoving(): void {
+    this.removingX = event.srcElement.parentElement.offsetLeft;
+    this.removingY = event.srcElement.parentElement.offsetTop; 
+    this.removing = true;
+  }
+  remove(confirmed: any): void {
+    if (confirmed) {
+      if (this.auth.loggedIn()) {
+        this.ps.removePost(this.post._id).subscribe(res => {
+          this.ns.pushNotification({ type: 'success', message: 'post removed' });
+          this.delete.emit(this.index);
+        });
+      }
+    }else{
+      this.cancelRemoving();
     }
   }
-
+  cancelRemoving(): void {
+    this.removing = false;
+  }
   timeSince(date: Date) {
 
     var seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);

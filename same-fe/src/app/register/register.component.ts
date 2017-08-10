@@ -1,3 +1,4 @@
+import { NotificationService } from './../components/notification/notification.service';
 import { AuthService } from './../services/auth.service';
 import { Router } from '@angular/router';
 import { RegisterService } from './register.service';
@@ -20,7 +21,7 @@ export class RegisterComponent implements OnInit {
     password: { valid: true, message: '' },
     confirmPassword: { valid: true, message: '' }
   }
-  constructor(private rs: RegisterService, private fb: FormBuilder, private router: Router, private auth: AuthService) {
+  constructor(private rs: RegisterService, private fb: FormBuilder, private router: Router, private auth: AuthService, private ns: NotificationService) {
     this.registerForm = fb.group({
       username: ['', Validators.required],
       email: ['', Validators.required],
@@ -45,7 +46,8 @@ export class RegisterComponent implements OnInit {
         this.rs.register(this.registerForm.value).subscribe(res => {
           this.auth.login({ username: this.registerForm.get('username').value, password: this.registerForm.get('password').value }).subscribe(res => {
             if (res) {
-              location.href = '/feed';
+              this.ns.pushNotification({ type: 'success', message: 'registered, you are now logged in' });
+              this.router.navigate(['feed']);
             }
           });
         }, err => {

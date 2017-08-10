@@ -1,0 +1,44 @@
+@import '../../../assets/variables';
+#notifications {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding-right: 50px;
+  padding-bottom: 40px;
+  width: 500px;
+  font-weight: 300;
+  .alert {
+    padding: 12px;
+    margin-top: 5px;
+    font-size: 1.2rem;
+    display: grid;
+    grid-template-columns: 1fr 20px;
+    width: 100%;
+    div {
+      display: inline-block;
+    }
+    div:last-child {
+      text-align: right;
+    }
+  }
+  .alert:first-child {
+    margin: 0;
+  }
+  .alert-success {
+    background: lighten($confirmation, 12%);
+    color: darken($confirmation, 27%);
+    a {
+      color: darken($confirmation, 27%);
+    }
+  }
+  .alert-error {
+    background: lighten($danger, 12%);
+    color: darken($danger, 27%);
+    a {
+      color: darken($danger, 27%);
+    }
+  }
+}
+strong{
+    font-weight: 400;
+}

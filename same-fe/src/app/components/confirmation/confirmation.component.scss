@@ -1,0 +1,28 @@
+@import '../../../assets/variables';
+a {
+  cursor: pointer;
+}
+
+.confirmation {
+  position: absolute;
+  padding: 5px 10px;
+  background: white;
+  border: 1px solid darken($light, 10%);
+  font-size: .8rem;
+  width: 90px;
+  .confirmation-title {
+    font-size: 1rem;
+  }
+  .btn-confirm {
+    color: $confirmation;
+    &:hover {
+      color: lighten($confirmation, 15%);
+    }
+  }
+  .btn-abort {
+    color: $danger;
+    &:hover {
+      color: lighten($danger, 15%);
+    }
+  }
+}
