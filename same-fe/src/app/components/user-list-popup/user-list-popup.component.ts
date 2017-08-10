@@ -15,8 +15,6 @@ export class UserListPopupComponent implements OnInit {
   @Input() userList: any[] = [];
   @ViewChild('popup') popup;
 
-  canClose: boolean = false;
-
   constructor() { }
 
   ngOnInit() {
@@ -35,9 +33,8 @@ export class UserListPopupComponent implements OnInit {
     }
   }
   onClick($event): void {
-    if (!this.popup.nativeElement.contains(event.target) && this.canClose) {
+    if (!this.popup.nativeElement.contains(event.target)) {
       this.close();
     }
-    this.canClose = true;
   }
 }
