@@ -26,7 +26,6 @@ export class FeedComponent implements OnInit {
           this.more = false;
         }
         this.posts = res;
-        console.log(this.posts)
         this.loaded = true;
       });
     }

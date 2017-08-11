@@ -47,6 +47,11 @@ export const routes: Routes = [
         path: ':username',
         component: UserComponent,
 
+    },
+    {
+        path: ':username/:postid',
+        component: UserComponent,
+
     }
 ]
 

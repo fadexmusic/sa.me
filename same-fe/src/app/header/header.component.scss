@@ -30,6 +30,19 @@ header {
       line-height: $header-height;
       vertical-align: middle;
       text-align: right;
+      span{
+        position: relative;
+      }
+      .unread-notifs{
+        cursor: pointer;
+        position: absolute;
+        background: $warning;
+        top: -9px;
+        left: 58px;
+        padding: 2px;
+        vertical-align: top;
+        line-height: 1rem;
+      }
     }
   }
 }

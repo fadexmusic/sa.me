@@ -36,7 +36,8 @@
       }
     }
     #popup-cont {
-        
+      overflow: auto;
+      height: 554px;
       .popup-item {
         text-align: left;
         padding: 5px 10px;

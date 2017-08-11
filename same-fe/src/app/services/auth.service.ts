@@ -2,7 +2,7 @@ import { TokenUtil } from './../util/token.util';
 import { User } from './../user/user.service';
 import { serverAdress } from './../app.config';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Observable } from "rxjs";
 import 'rxjs/add/operator/map';
 import { AuthConfig } from "angular2-jwt/angular2-jwt";
@@ -11,6 +11,8 @@ import { AuthConfig } from "angular2-jwt/angular2-jwt";
 export class AuthService {
   public token: string;
   public user: any;
+
+  @Output() refresh: EventEmitter<any> = new EventEmitter();
 
   constructor(private http: Http, private tokenUtil: TokenUtil) {
     let token = JSON.parse(localStorage.getItem('token'));

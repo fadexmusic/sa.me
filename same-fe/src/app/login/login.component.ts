@@ -41,6 +41,7 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.valid) {
       this.auth.login(this.loginForm.value).subscribe(res => {
         if (res) {
+          this.auth.refresh.emit();
           this.router.navigate(['feed']);
         }
       }, err => {

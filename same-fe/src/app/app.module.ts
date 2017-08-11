@@ -26,6 +26,7 @@ import { SearchComponent } from './header/search/search.component';
 import { ClickOutsideModule } from 'ng-click-outside';
 import { EditComponent } from './user/edit/edit.component';
 import { UserListPopupComponent } from './components/user-list-popup/user-list-popup.component';
+import { NotificationsComponent } from './header/notifications/notifications.component';
 
 export function authHttpServiceFactory(http: Http, options: RequestOptions, as: AuthService) {
   return new AuthHttp(as.getAuthConfig(), http, options);
@@ -46,7 +47,8 @@ export function authHttpServiceFactory(http: Http, options: RequestOptions, as: 
     EditComponent,
     UserListPopupComponent,
     NotificationComponent,
-    ConfirmationComponent
+    ConfirmationComponent,
+    NotificationsComponent
   ],
   imports: [
     BrowserModule,

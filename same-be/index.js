@@ -15,6 +15,7 @@ var Post = require('./models/post');
 var UPR = require('./models/userpostrelation');
 var UUR = require('./models/useruserrelation');
 var Feed = require('./models/feed');
+var Notification = require('./models/notification');
 
 /* INIT */
 var app = express();
@@ -30,7 +31,6 @@ var transporter = nodemailer.createTransport({
         pass: 'sameprojekt12345'
     }
 });
-
 
 /* USE */
 app.use(bodyParser.urlencoded({
@@ -51,7 +51,6 @@ app.route('/register')
         bcrypt.hash(req.body.password, config.saltRounds, (err, password) => {
             if (!err) {
                 let newUser;
-                console.log(req.body.avatar)
                 if (req.body.avatar == "" || req.body.avatar == null) {
                     newUser = new User({
                         username: req.body.username,
@@ -90,12 +89,11 @@ app.route('/register')
 
                         transporter.sendMail(mailOptions, function (error, info) {
                             if (error) {
-                                throw error;
+                                res.status(400).send('invalid email');
                             } else {
-                                
+                                res.sendStatus(200);
                             }
                         });
-                        res.sendStatus(200);
                     }
                 });
             } else {
@@ -612,12 +610,46 @@ app.route('/post/:postid')
                             });
                             newUPR.save((UPRrelationSaveError) => {
                                 if (UPRrelationError) throw err;
-                                res.status(200).send('samed');
+                                Post.findById(req.params.postid, (err, post) => {
+                                    if (err) throw err;
+                                    if (user.id == post.byID) {
+                                        res.status(200).send('samed');
+                                    } else {
+                                        User.findById(post.byID, (err, u) => {
+                                            if (err) throw err;
+                                            let newNotif = new Notification({
+                                                byID: user.id,
+                                                userID: u._id,
+                                                type: 'same',
+                                                postID: req.params.postid
+                                            });
+                                            newNotif.save(err => {
+                                                if (err) throw err;
+                                                res.status(200).send('samed');
+                                            })
+                                        });
+
+                                    }
+                                });
                             });
                         } else {
                             uprelation.remove((err) => {
                                 if (err) throw err;
-                                res.status(200).send('unsamed');
+                                Post.findById(req.params.postid, (err, post) => {
+                                    if (err) throw err;
+                                    if (post.byID == user.id) {
+                                        res.status(200).send('unsamed');
+                                    } else {
+                                        Notification.find({
+                                            postID: req.params.postid,
+                                            byID: user.id
+                                        }).remove(err => {
+                                            if (err) throw err;
+                                            res.status(200).send('unsamed');
+                                        });
+                                    }
+                                });
+
                             });
                         }
                     } else {
@@ -742,10 +774,26 @@ app.route('/follow/:followid')
                                                 })
                                             }, (err, callback) => {
                                                 if (err) throw err;
-                                                res.status(200).send('followed');
+                                                let newNotif = new Notification({
+                                                    userID: req.params.followid,
+                                                    type: 'follow',
+                                                    byID: user.id
+                                                });
+                                                newNotif.save(nsaverr => {
+                                                    if (nsaverr) throw err;
+                                                    res.status(200).send('followed');
+                                                });
                                             });
                                         } else {
-                                            res.status(200).send('followed');
+                                            let newNotif = new Notification({
+                                                userID: req.params.followid,
+                                                type: 'follow',
+                                                byID: user.id
+                                            });
+                                            newNotif.save(nsaverr => {
+                                                if (nsaverr) throw err;
+                                                res.status(200).send('followed');
+                                            });
                                         }
                                     })
                                 } else {
@@ -780,10 +828,20 @@ app.route('/follow/:followid')
                                             });
                                         }, (err, callback) => {
                                             if (err) throw err;
-                                            res.status(200).send('unfollowed');
+                                            Notification.find({
+                                                userID: req.params.followid
+                                            }).remove(err => {
+                                                if (err) throw err;
+                                                res.status(200).send('unfollowed')
+                                            });
                                         });
                                     } else {
-                                        res.status(200).send('unfollowed')
+                                        Notification.find({
+                                            userID: req.params.followid
+                                        }).remove(err => {
+                                            if (err) throw err;
+                                            res.status(200).send('unfollowed')
+                                        });
                                     }
                                 });
                             })
@@ -857,6 +915,81 @@ app.route('/feed')
             }
         }
     })
+
+/* NOTIFICATIONS */
+app.route('/notifications')
+    .get((req, res) => {
+        if (req.headers.authorization) {
+            let auth = req.headers.authorization.split(' ');
+            if (auth[0] == "Bearer") {
+                let user = jwt.decode(auth[1], config.secret);
+                Notification.find({
+                    userID: user.id
+                }).limit(parseInt(req.query.limit)).sort({
+                    date: -1
+                }).lean().exec((err, notifications) => {
+                    if (err) throw err;
+                    if (notifications.length > 0) {
+                        async.map(notifications, (notification, callback) => {
+                            User.findById(notification.byID, (err, user) => {
+                                if (err) throw err;
+                                let n = notification;
+                                n.byUsername = user.username;
+                                n.byAvatar = user.avatar;
+                                callback(null, n);
+                            });
+                        }, (err, notifs) => {
+                            if (err) throw err;
+                            res.status(200).json(notifs);
+                        })
+                    } else {
+                        res.status(404).send('no notifs found');
+                    }
+                })
+            }
+        }
+    });
+app.route('/notifications/count')
+    .get((req, res) => {
+        if (req.headers.authorization) {
+            let auth = req.headers.authorization.split(' ');
+            if (auth[0] == "Bearer") {
+                let user = jwt.decode(auth[1], config.secret);
+                Notification.find({userID: user.id}, (err, notifications) => {
+                    if(err) throw err;
+                    if(notifications){
+                        let notifAmount = 0;
+                        notifications.forEach(n => {
+                            if(!n.read){
+                                notifAmount++;
+                            }
+                        })
+                        res.status(200).send(notifAmount.toString());
+                    }else{
+                        res.status(200).send(toString(0));
+                    }
+                })
+            }
+        }
+    });
+app.route('/notifications/:notifid')
+    .put((req, res) => {
+        if (req.headers.authorization) {
+            let auth = req.headers.authorization.split(' ');
+            if (auth[0] == "Bearer") {
+                let user = jwt.decode(auth[1], config.secret);
+                Notification.findById(req.params.notifid, (err, notification) => {
+                    if (err) throw err;
+                    notification.read = true;
+                    notification.save(err => {
+                        if (err) throw err;
+                        res.status(200).send('read');
+                    })
+                });
+            }
+        }
+    });
+
 /* SEARCH */
 app.route('/search')
     .get((req, res) => {

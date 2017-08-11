@@ -5,13 +5,16 @@
         <h1>same</h1>
       </a>
     </div>
-    <div class="search"> 
-    <app-search></app-search>  
+    <div class="search">
+      <app-search></app-search>
     </div>
     <div id="options">
       <span *ngIf="auth.loggedIn()">
         <a [routerLink]="['/post']"><i class="fa fa-plus" aria-hidden="true"></i></a> |
         <a [routerLink]="['', auth.user.username]"><i class="fa fa-user-o" aria-hidden="true"></i></a>  |
+        <a (click)="notifications()"><i class="fa fa-bell-o" aria-hidden="true"></i><div *ngIf="unreadNotifs>0" class="unread-notifs">{{ unreadNotifs }}</div></a>  |
+        
+      <app-notifications *ngIf="notificationsOpen" (close)="notifications()" (r)="read()"></app-notifications>
          <a [routerLink]="['login']"><i class="fa fa-power-off" aria-hidden="true"></i></a></span>
       <span *ngIf="!auth.loggedIn()"><a [routerLink]="['login']">log in</a></span>
     </div>

@@ -47,6 +47,8 @@ export class RegisterComponent implements OnInit {
           this.auth.login({ username: this.registerForm.get('username').value, password: this.registerForm.get('password').value }).subscribe(res => {
             if (res) {
               this.ns.pushNotification({ type: 'success', message: 'registered, you are now logged in' });
+
+              this.auth.refresh.emit();
               this.router.navigate(['feed']);
             }
           });
@@ -59,6 +61,10 @@ export class RegisterComponent implements OnInit {
             case "email taken":
               this.valid.email.valid = false;
               this.valid.email.message = 'account with this email already exists'
+              break;
+            case "invalid email":
+              this.valid.email.valid = false;
+              this.valid.email.message = 'invalid email'
               break;
           }
         });

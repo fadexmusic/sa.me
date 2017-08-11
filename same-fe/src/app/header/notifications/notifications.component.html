@@ -1,0 +1,24 @@
+<div #notifications id="notifications">
+  <div id="title">notifications</div>
+  <div class="content">
+    <div *ngIf="notifArray==null" id="no-notifs">no notifications</div>
+    <div *ngFor="let notification of notifArray; let i = index" on-mouseover="read(i)" class="notif-item" [ngClass]="{unread: !notification.read}">
+      <div class="notif">
+        <div class="notif-content">
+          <div class="follow">
+            <a (click)="end()" [routerLink]="['/' + notification.byUsername]">
+            <img src="{{ notification.byAvatar }}"> 
+            <div style="display: inline-block; margin-left: 4px">  {{ notification.byUsername }}</div>
+          </a>
+            <span *ngIf="notification.type=='follow'">followed you</span>
+            <span *ngIf="notification.type=='same'">samed your <a (click)="end()" [routerLink]="['/' + username + '/' + notification.postID]">post</a></span>
+          </div>
+        </div>
+      </div>
+      <div class="notif-ago">
+        {{notification.ago}} ago
+      </div>
+    </div>
+    <div id="load-more"><a (click)="loadMore()" *ngIf="more">load more</a></div>
+  </div>
+</div>
