@@ -129,9 +129,6 @@ export class UserComponent implements OnInit {
     });
   }
   closePostPopup(event: any): void {
-    this.location.go('/' + this.user.username);
-    this.focusPost = false;
-    this.focusedPostLoaded = false;
     if (event == "delete") {
       for (let i in this.posts) {
         if (this.posts[i]._id == this.focusedPost._id) {
@@ -145,6 +142,10 @@ export class UserComponent implements OnInit {
         this.posts = res;
       });
     }
+
+    this.location.go('/' + this.user.username);
+    this.focusPost = false;
+    this.focusedPostLoaded = false;
     this.focusedPost = null;
   }
 

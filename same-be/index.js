@@ -988,7 +988,6 @@ app.route('/notifications/count')
                                 notifAmount++;
                             }
                         })
-                        console.log(notifAmount)
                         res.status(200).send(notifAmount.toString());
                     } else {
                         res.status(200).send(toString(0));
