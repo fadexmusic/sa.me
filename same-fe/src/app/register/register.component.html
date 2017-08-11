@@ -2,7 +2,7 @@
 <form [formGroup]="registerForm" (ngSubmit)="register()" id="registerform">
   <input [ngClass]="{invalid: !valid.username.valid}" type="text" placeholder="username" [formControl]="registerForm.controls['username']">
   <div class="invalid">{{ valid.username.message }}</div>
-  <input [ngClass]="{invalid: !valid.email.valid}" type="email" placeholder="email" [formControl]="registerForm.controls['email']">
+  <input [ngClass]="{invalid: !valid.email.valid}" type="email" placeholder="email" [formControl]="registerForm.controls['email']" pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$">
   <div class="invalid">{{ valid.email.message }}</div>
   <input [ngClass]="{invalid: !valid.avatar.valid}" type="text" placeholder="avatar url" [formControl]="registerForm.controls['avatar']">
   <div class="invalid">{{ valid.avatar.message }}</div>

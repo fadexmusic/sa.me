@@ -47,7 +47,6 @@ export class RegisterComponent implements OnInit {
           this.auth.login({ username: this.registerForm.get('username').value, password: this.registerForm.get('password').value }).subscribe(res => {
             if (res) {
               this.ns.pushNotification({ type: 'success', message: 'registered, you are now logged in' });
-
               this.auth.refresh.emit();
               this.router.navigate(['feed']);
             }
@@ -79,6 +78,9 @@ export class RegisterComponent implements OnInit {
           if (i == 'confirmPassword') {
             this.valid[i].valid = false;
             this.valid[i].message = 'confirm password required'
+          }else if(i = 'email'){
+            this.valid[i].valid = false;
+            this.valid[i].message = 'invalid email';
           } else {
             this.valid[i].valid = false;
             this.valid[i].message = i + ' required'
