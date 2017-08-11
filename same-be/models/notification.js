@@ -29,7 +29,8 @@ var notifSchema = new Schema({
 
 notifSchema.index({
     userID: 1,
-    posted: -1
+    posted: -1,
+    postID: 1
 });
 
 var Notif = mongoose.model('Notification', notifSchema);

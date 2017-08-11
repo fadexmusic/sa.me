@@ -25,6 +25,9 @@ export class UserService {
   getPosts(id: string, offset: number, limit: number): Observable<any> {
     return this.http.get(serverAdress + 'posts/' + id + '?offset=' + offset + '&limit=' + limit).map(res => res.json());
   }
+  getPost(id: string): Observable<any> {
+    return this.http.get(serverAdress + 'post/' + id).map(res => res.json());
+  }
   followerCount(id: string): Observable<any> {
     return this.http.get(serverAdress + 'followers/' + id + '/count').map(res => res.text());
   }

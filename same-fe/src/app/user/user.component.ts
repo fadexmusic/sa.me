@@ -5,6 +5,7 @@ import { Post } from './post/post.component';
 import { UserService } from './user.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-user',
@@ -29,12 +30,24 @@ export class UserComponent implements OnInit {
   ulTitle: string = '';
   userList: any[] = [];
 
+  focusPost: boolean = false;
+  focusedPost: any;
+  focusedPostLoaded: boolean = false;
+
+
   unfollowButton: string = 'following';
-  constructor(private router: Router, private route: ActivatedRoute, private auth: AuthService, private us: UserService) { }
+  constructor(private router: Router, private route: ActivatedRoute, private auth: AuthService, private us: UserService, private location: Location) { }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.us.getUser(params['username']).subscribe(res => {
+        if(params['postid']){
+          this.focusPost = true;
+          this.us.getPost(params['postid']).subscribe((res) => {
+            this.focusedPost = res;
+            this.focusedPostLoaded = true;
+          });
+        }
         this.user = res;
         this.us.followerCount(this.user._id).subscribe(count => {
           this.followers = count;
@@ -115,7 +128,19 @@ export class UserComponent implements OnInit {
       this.posts = this.posts.concat(res);
     });
   }
-
+  closePostPopup(event: any): void{
+    this.location.go('/' + this.user.username);
+    this.focusPost = false;
+    this.focusedPostLoaded = false;
+    if(event=="delete"){
+      for(let i in this.posts){
+        if(this.posts[i]._id = this.focusedPost._id){
+          this.posts.splice(parseInt(i),1);
+        }
+      }
+    }
+    this.focusedPost = null;
+  }
 
 
 }

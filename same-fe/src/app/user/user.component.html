@@ -48,3 +48,4 @@
   <div id="load-more"><a (click)="loadMore()" *ngIf="more">load more</a> <span id="no-more" *ngIf="!more">no more posts</span></div>
 </div>
 <app-user-list-popup *ngIf="userlistOpen" (end)="closeUserlistPopup()" [popupTitle]="ulTitle" [userList]="userList"></app-user-list-popup>
+<app-post-popup *ngIf="focusPost && focusedPostLoaded" [post]="focusedPost" (end)="closePostPopup($event)"></app-post-popup>

@@ -26,7 +26,7 @@ export class PostService {
     return this.http.delete(serverAdress + this.uri + id).map(res => res.text());
   }
   samed(id: string): Observable<any> {
-    return this.http.get(serverAdress + this.uri + id, this.options).map(res => res.json());
+    return this.http.get(serverAdress + 'samed/'+ id, this.options).map(res => res.json());
   }
   getSamers(id: string): Observable<any> {
     return this.http.get(serverAdress + this.uri + id + '/list', this.options).map(res => res.json());

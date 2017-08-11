@@ -30,8 +30,8 @@ export class NotificationsComponent implements OnInit {
   }
 
   ngOnInit() {
+    
     this.ns.getNotifications(this.limit).subscribe((res) => {
-
       if (res.length % 20 != 0) {
         this.more = false;
       }

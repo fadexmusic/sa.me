@@ -19,6 +19,6 @@
         {{notification.ago}} ago
       </div>
     </div>
-    <div id="load-more"><a (click)="loadMore()" *ngIf="more">load more</a></div>
+    <div id="load-more"  *ngIf="more && notifArray.length!=0 && notifArray"><a (click)="loadMore()">load more</a></div>
   </div>
 </div>

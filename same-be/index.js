@@ -340,6 +340,14 @@ app.route('/user')
                         });
                     },
                     (user, callback) => {
+                        Notification.find({
+                            userID: user._id
+                        }).remove(err => {
+                            if (err) throw err;
+                            return callback(null, user);
+                        })
+                    },
+                    (user, callback) => {
                         user.remove(err => {
                             if (err) throw err;
                             callback(null, 'done');
@@ -451,6 +459,7 @@ app.route('/posts/:userid')
             }
         })
     });
+
 app.route('/post')
     .post((req, res) => {
         if (req.headers.authorization) {
@@ -569,8 +578,7 @@ app.route('/post')
             res.sendStatus(401);
         }
     });
-
-app.route('/post/:postid')
+app.route('/samed/:postid')
     .get((req, res) => {
         if (req.headers.authorization) {
             let auth = req.headers.authorization.split(' ');
@@ -592,6 +600,13 @@ app.route('/post/:postid')
                 });
             }
         }
+    })
+app.route('/post/:postid')
+    .get((req, res) => {
+        Post.findById(req.params.postid, (err, post) => {
+            if (err) throw err;
+            res.status(200).json(post);
+        });
     })
     .put((req, res) => {
         if (req.headers.authorization) {
@@ -696,6 +711,13 @@ app.route('/post/:postid')
                             if (err) throw err;
                             return callback(null, post)
                         })
+                    }, (post, callback) => {
+                        Notification.find({
+                            postID: post._id
+                        }).remove((err) => {
+                            if (err) throw err;
+                            return callback(null, post);
+                        });
                     }, (post, callback) => {
                         post.remove((err) => {
                             if (err) throw err;
@@ -955,17 +977,19 @@ app.route('/notifications/count')
             let auth = req.headers.authorization.split(' ');
             if (auth[0] == "Bearer") {
                 let user = jwt.decode(auth[1], config.secret);
-                Notification.find({userID: user.id}, (err, notifications) => {
-                    if(err) throw err;
-                    if(notifications){
+                Notification.find({
+                    userID: user.id
+                }, (err, notifications) => {
+                    if (err) throw err;
+                    if (notifications) {
                         let notifAmount = 0;
                         notifications.forEach(n => {
-                            if(!n.read){
+                            if (!n.read) {
                                 notifAmount++;
                             }
                         })
                         res.status(200).send(notifAmount.toString());
-                    }else{
+                    } else {
                         res.status(200).send(toString(0));
                     }
                 })

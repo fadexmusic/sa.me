@@ -60,19 +60,4 @@
       margin-top: 2px;
     }
   }
-  .popover-footer {
-    width: 100%;
-    padding: 5px;
-    text-align: center;
-    background: #f7f7f7;
-    border-top: 1px solid #ebebeb;
-    a {
-      color: $main;
-      cursor: pointer;
-      transition: .2s all;
-      &:hover {
-        color: lighten($main, 20%) !important;
-      }
-    }
-  }
 }

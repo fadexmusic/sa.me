@@ -15,7 +15,7 @@
         <a (click)="notifications()"><i class="fa fa-bell-o" aria-hidden="true"></i><div *ngIf="unreadNotifs>0" class="unread-notifs">{{ unreadNotifs }}</div></a>  |
         
       <app-notifications *ngIf="notificationsOpen" (close)="notifications()" (r)="read()"></app-notifications>
-         <a [routerLink]="['login']"><i class="fa fa-power-off" aria-hidden="true"></i></a></span>
+         <a href="/login"><i class="fa fa-power-off" aria-hidden="true"></i></a></span>
       <span *ngIf="!auth.loggedIn()"><a [routerLink]="['login']">log in</a></span>
     </div>
   </div>

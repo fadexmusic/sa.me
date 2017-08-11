@@ -21,19 +21,24 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.auth.refresh.subscribe((res) => {
+    if (this.auth.loggedIn()) {
+      this.auth.refresh.subscribe((res) => {
+        this.ns.getNotificationCount().subscribe(res => {
+          this.unreadNotifs = res;
+        });
+      });
       this.ns.getNotificationCount().subscribe(res => {
         this.unreadNotifs = res;
       });
-    });
-    this.ns.getNotificationCount().subscribe(res => {
-      this.unreadNotifs = res;
-    });
+    }
   }
   ngOnChanges() {
-    this.ns.getNotificationCount().subscribe(res => {
-      this.unreadNotifs = res;
-    });
+    if (this.auth.loggedIn()) {
+      this.ns.getNotificationCount().subscribe(res => {
+        this.unreadNotifs = res;
+      });
+
+    }
   }
   public notifications(): void {
     this.notificationsOpen = !this.notificationsOpen;
