@@ -41,7 +41,7 @@ export class UserComponent implements OnInit {
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.us.getUser(params['username']).subscribe(res => {
-        if(params['postid']){
+        if (params['postid']) {
           this.focusPost = true;
           this.us.getPost(params['postid']).subscribe((res) => {
             this.focusedPost = res;
@@ -128,16 +128,22 @@ export class UserComponent implements OnInit {
       this.posts = this.posts.concat(res);
     });
   }
-  closePostPopup(event: any): void{
+  closePostPopup(event: any): void {
     this.location.go('/' + this.user.username);
     this.focusPost = false;
     this.focusedPostLoaded = false;
-    if(event=="delete"){
-      for(let i in this.posts){
-        if(this.posts[i]._id = this.focusedPost._id){
-          this.posts.splice(parseInt(i),1);
+    if (event == "delete") {
+      for (let i in this.posts) {
+        if (this.posts[i]._id == this.focusedPost._id) {
+          this.posts.splice(parseInt(i), 1);
         }
       }
+      this.us.getPosts(this.user._id, this.offset, perPage).subscribe(res => {
+        if (res.length < perPage) {
+          this.more = false;
+        }
+        this.posts = res;
+      });
     }
     this.focusedPost = null;
   }
