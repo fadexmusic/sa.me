@@ -9,6 +9,7 @@ import { FeedComponent } from './feed/feed.component';
 import { LoginComponent } from './login/login.component';
 import { Routes, RouterModule } from '@angular/router'
 import { ModuleWithProviders } from "@angular/core";
+import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 
 export const routes: Routes = [
     {
@@ -18,6 +19,10 @@ export const routes: Routes = [
     {
         path: 'register',
         component: RegisterComponent
+    },
+    {
+        path: 'reset',
+        component: ForgotPasswordComponent
     },
     {
         path: '',
@@ -35,7 +40,7 @@ export const routes: Routes = [
         canActivate: [AuthGuard]
     },
     {
-        path: '404',
+        path: '808',
         component: NotFoundComponent
     },
     {

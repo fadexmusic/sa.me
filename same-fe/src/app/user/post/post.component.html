@@ -15,7 +15,7 @@
       <div class="description" *ngIf="post.description!='' || post.description!=null">
         {{post.description}}
       </div>
-      <img src="{{post.content}}" width="100%" (dblclick)="same()">
+      <img src="{{post.content}}" width="100%" (dblclick)="changeSame()">
     </div>
     <div *ngIf="post.type=='text'">
       {{ post.content }}

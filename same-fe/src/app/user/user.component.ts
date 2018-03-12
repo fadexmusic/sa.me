@@ -75,7 +75,7 @@ export class UserComponent implements OnInit {
           }
         }
       }, err => {
-        this.router.navigate(['404']);
+        this.router.navigate(['808']);
       });
     });
   }

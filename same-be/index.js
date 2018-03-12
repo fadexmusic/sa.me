@@ -44,7 +44,6 @@ app.get('/', (req, res) => {
     res.send('app works');
 });
 
-
 /* REGISTER */
 app.route('/register')
     .post((req, res) => {
@@ -66,42 +65,44 @@ app.route('/register')
                     });
 
                 }
-                newUser.save((err) => {
-                    if (err) {
-                        switch (err.errmsg.split(' ')[7].split('_')[0]) {
-                            case 'username':
-                                res.status(400).send('username taken');
-                                break;
-                            case 'email':
-                                res.status(400).send('email taken');
-                                break;
-                            default:
-                                res.status(400).send('unknown error')
-                                break;
-                        }
+                var mailOptions = {
+                    from: 'sa.me.socialnetwork@gmail.com',
+                    to: req.body.email,
+                    subject: 'Registration confirmation to sa.me',
+                    html: 'You were successfully registered under the name <b>' + req.body.username + '</b>, thanks and enjoy!'
+                };
+                //res.sendStatus(200);
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        res.status(400).send('invalid email');
                     } else {
-                        var mailOptions = {
-                            from: 'sa.me.socialnetwork@gmail.com',
-                            to: req.body.email,
-                            subject: 'Registration confirmation to sa.me',
-                            html: 'You were successfully registered under the name <b>' + req.body.username + '</b>, thanks and enjoy!'
-                        };
-
-                        transporter.sendMail(mailOptions, function (error, info) {
-                            if (error) {
-                                res.status(400).send('invalid email');
+                        newUser.save((err) => {
+                            if (err) {
+                                switch (err.errmsg.split(' ')[7].split('_')[0]) {
+                                    case 'username':
+                                        res.status(400).send('username taken');
+                                        break;
+                                    case 'email':
+                                        res.status(400).send('email taken');
+                                        break;
+                                    default:
+                                        res.status(400).send('unknown error')
+                                        break;
+                                }
                             } else {
+
                                 res.sendStatus(200);
                             }
                         });
+
                     }
                 });
+
             } else {
                 res.status(500).send('error registering');
             }
         })
     });
-
 /* LOGIN */
 app.route('/login')
     .post((req, res) => {
@@ -363,6 +364,47 @@ app.route('/user')
             }
         }
     });
+app.route('/reset')
+    .put((req, res) => {
+        User.find({ email: req.body.email }, (err, user) => {
+            if (err) throw err;
+            if (user.length != 1) res.sendStatus(404);
+            user = user[0];
+            function makeid() {
+                var text = "";
+                var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+                for (var i = 0; i < 8; i++)
+                    text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+                return text;
+            }
+
+            pwd = makeid();
+            bcrypt.hash(pwd, config.saltRounds, (err, password) => {
+                if (err) throw err;
+                user.password = password;
+                var mailOptions = {
+                    from: 'sa.me.socialnetwork@gmail.com',
+                    to: user.email,
+                    subject: 'Password reset',
+                    html: 'Your password has been reset to <b>' + pwd + '</b>, please log in and change your password.'
+                };
+                transporter.sendMail(mailOptions, function (error, info) {
+                    if (error) {
+                        res.status(400).send('invalid email');
+                    } else {
+                        user.save((err) => {
+                            if (err) throw err;
+                            res.sendStatus(200);
+                        });
+                    }
+                });
+
+            });
+
+        })
+    });
 app.route('/follows')
     .get((req, res) => {
         if (req.headers.authorization) {
@@ -444,6 +486,9 @@ app.route('/following/:userid/list')
             })
         });
     });
+
+
+
 /* POSTS */
 app.route('/posts/:userid')
     .get((req, res) => {
