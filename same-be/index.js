@@ -368,41 +368,45 @@ app.route('/reset')
     .put((req, res) => {
         User.find({ email: req.body.email }, (err, user) => {
             if (err) throw err;
-            if (user.length != 1) res.sendStatus(404);
-            user = user[0];
-            function makeid() {
-                var text = "";
-                var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-                for (var i = 0; i < 8; i++)
-                    text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-                return text;
+            if (user.length != 1) {
+                res.send('').status(404)
             }
+            else {
+                user = user[0];
+                function makeid() {
+                    var text = "";
+                    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-            pwd = makeid();
-            bcrypt.hash(pwd, config.saltRounds, (err, password) => {
-                if (err) throw err;
-                user.password = password;
-                var mailOptions = {
-                    from: 'sa.me.socialnetwork@gmail.com',
-                    to: user.email,
-                    subject: 'Password reset',
-                    html: 'Your password has been reset to <b>' + pwd + '</b>, please log in and change your password.'
-                };
-                transporter.sendMail(mailOptions, function (error, info) {
-                    if (error) {
-                        res.status(400).send('invalid email');
-                    } else {
-                        user.save((err) => {
-                            if (err) throw err;
-                            res.sendStatus(200);
-                        });
-                    }
+                    for (var i = 0; i < 8; i++)
+                        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+                    return text;
+                }
+
+                pwd = makeid();
+                bcrypt.hash(pwd, config.saltRounds, (err, password) => {
+                    if (err) throw err;
+                    user.password = password;
+                    var mailOptions = {
+                        from: 'sa.me.socialnetwork@gmail.com',
+                        to: user.email,
+                        subject: 'Password reset',
+                        html: 'Your password has been reset to <b>' + pwd + '</b>, please log in and change your password.'
+                    };
+                    transporter.sendMail(mailOptions, function (error, info) {
+                        if (error) {
+                            res.status(400).send('invalid email');
+                        } else {
+                            user.save((err) => {
+                                if (err) throw err;
+
+                                res.sendStatus(200);
+                            });
+                        }
+                    });
+
                 });
-
-            });
-
+            }
         })
     });
 app.route('/follows')
