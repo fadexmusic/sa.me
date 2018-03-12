@@ -194,7 +194,7 @@ app.route('/user')
                             if (!err) {
                                 return callback(null, user);
                             }
-                            throw err;
+                            console.log(err);
                         });
                     }, (user, callback) => {
                         bcrypt.compare(req.body.password, user.password, (err, same) => {
@@ -205,7 +205,7 @@ app.route('/user')
                                     return callback(true, 'wrong password');
                                 }
                             } else {
-                                throw err;
+                                console.log(err);
                             }
                         })
                     }, (user, callback) => {
@@ -243,14 +243,14 @@ app.route('/user')
                         } else if (req.query.action == "password") {
                             bcrypt.hash(req.body.newpassword, config.saltRounds, (error, password) => {
                                 if (error) {
-                                    throw err;
+                                    console.log(err);
                                 } else {
                                     user.password = password;
                                     user.save((err) => {
                                         if (!err) {
                                             return callback(null, 'password saved');
                                         }
-                                        throw err;
+                                        console.log(err);
                                     })
                                 }
                             });
@@ -290,7 +290,7 @@ app.route('/user')
                                     return callback(true, 'wrong password')
                                 }
                             } else {
-                                throw err;
+                                console.log(err);
                             }
                         })
                     },
@@ -298,7 +298,7 @@ app.route('/user')
                         UUR.find({
                             followerID: user._id
                         }).remove((err, urd) => {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             callback(null, user);
                         });
                     },
@@ -306,7 +306,7 @@ app.route('/user')
                         UPR.find({
                             userID: user._id
                         }).remove((err) => {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             callback(null, user);
                         });
                     },
@@ -314,17 +314,17 @@ app.route('/user')
                         Post.find({
                             byID: user._id
                         }, (err, posts) => {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             if (posts.length > 0) {
                                 async.map(posts, (post, cb) => {
                                     Feed.find({
                                         postID: post._id
                                     }).remove((err) => {
-                                        if (err) throw err;
+                                        if (err) console.log(err);
                                         cb(null);
                                     });
                                 }, (err, cb) => {
-                                    if (err) throw err;
+                                    if (err) console.log(err);
                                     callback(null, user);
                                 });
                             } else {
@@ -336,7 +336,7 @@ app.route('/user')
                         Post.find({
                             byID: user._id
                         }).remove((err) => {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             callback(null, user);
                         });
                     },
@@ -344,13 +344,13 @@ app.route('/user')
                         Notification.find({
                             userID: user._id
                         }).remove(err => {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             return callback(null, user);
                         })
                     },
                     (user, callback) => {
                         user.remove(err => {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             callback(null, 'done');
                         });
                     }
@@ -367,7 +367,7 @@ app.route('/user')
 app.route('/reset')
     .put((req, res) => {
         User.find({ email: req.body.email }, (err, user) => {
-            if (err) throw err;
+            if (err) console.log(err);
             if (user.length != 1) {
                 res.send('').status(404)
             }
@@ -385,7 +385,7 @@ app.route('/reset')
 
                 pwd = makeid();
                 bcrypt.hash(pwd, config.saltRounds, (err, password) => {
-                    if (err) throw err;
+                    if (err) console.log(err);
                     user.password = password;
                     var mailOptions = {
                         from: 'sa.me.socialnetwork@gmail.com',
@@ -398,7 +398,7 @@ app.route('/reset')
                             res.status(400).send('invalid email');
                         } else {
                             user.save((err) => {
-                                if (err) throw err;
+                                if (err) console.log(err);
 
                                 res.sendStatus(200);
                             });
@@ -447,11 +447,11 @@ app.route('/followers/:userid/list')
         }, (err, uurs) => {
             async.map(uurs, (uur, callback) => {
                 User.findById(uur.followerID, (userfinderror, user) => {
-                    if (userfinderror) throw err;
+                    if (userfinderror) console.log(err);
                     callback(null, user);
                 })
             }, (err, followers) => {
-                if (err) throw err;
+                if (err) console.log(err);
                 res.status(200).json(followers);
             })
         });
@@ -461,7 +461,7 @@ app.route('/followers/:userid/count')
         UUR.find({
             followsID: req.params.userid
         }).count((err, count) => {
-            if (err) throw err;
+            if (err) console.log(err);
             res.status(200).send(count.toString());
         });
     });
@@ -470,7 +470,7 @@ app.route('/following/:userid/count')
         UUR.find({
             followerID: req.params.userid
         }).count((err, count) => {
-            if (err) throw err;
+            if (err) console.log(err);
             res.status(200).send(count.toString());
         });
     });
@@ -481,11 +481,11 @@ app.route('/following/:userid/list')
         }, (err, uurs) => {
             async.map(uurs, (uur, callback) => {
                 User.findById(uur.followsID, (userfinderror, user) => {
-                    if (userfinderror) throw err;
+                    if (userfinderror) console.log(err);
                     callback(null, user);
                 })
             }, (err, following) => {
-                if (err) throw err;
+                if (err) console.log(err);
                 res.status(200).json(following);
             })
         });
@@ -528,7 +528,7 @@ app.route('/post')
                                     UUR.find({
                                         followsID: user.id
                                     }, (err, uurs) => {
-                                        if (err) throw err;
+                                        if (err) console.log(err);
                                         if (uurs.length > 0) {
                                             return callback(null, uurs)
                                         } else {
@@ -542,11 +542,11 @@ app.route('/post')
                                             postID: post._id
                                         });
                                         newFeed.save((err) => {
-                                            if (err) throw err;
+                                            if (err) console.log(err);
                                             return cb(null);
                                         });
                                     }, (err, cb) => {
-                                        if (err) throw err;
+                                        if (err) console.log(err);
                                         return callback(null, 'posted, feeds pushed')
                                     })
                                 }
@@ -565,7 +565,7 @@ app.route('/post')
                             })
 
                         } else {
-                            throw err;
+                            console.log(err);
                         }
                     });
                 } else if (req.body.type == "image") {
@@ -582,7 +582,7 @@ app.route('/post')
                                     UUR.find({
                                         followsID: user.id
                                     }, (err, uurs) => {
-                                        if (err) throw err;
+                                        if (err) console.log(err);
                                         if (uurs.length > 0) {
                                             return callback(null, uurs)
                                         } else {
@@ -596,11 +596,11 @@ app.route('/post')
                                             postID: post._id
                                         });
                                         newFeed.save((err) => {
-                                            if (err) throw err;
+                                            if (err) console.log(err);
                                             return cb(null);
                                         });
                                     }, (err, cb) => {
-                                        if (err) throw err;
+                                        if (err) console.log(err);
                                         return callback(null, 'posted, feeds pushed')
                                     })
                                 }
@@ -611,14 +611,14 @@ app.route('/post')
                                         res.status(200).send(callback);
                                     } else {
 
-                                        throw err;
+                                        console.log(err);
                                     }
                                 } else {
                                     res.status(200).send(callback);
                                 }
                             })
                         } else {
-                            throw err;
+                            console.log(err);
                         }
                     });
                 }
@@ -653,7 +653,7 @@ app.route('/samed/:postid')
 app.route('/post/:postid')
     .get((req, res) => {
         Post.findById(req.params.postid, (err, post) => {
-            if (err) throw err;
+            if (err) console.log(err);
             res.status(200).json(post);
         });
     })
@@ -673,14 +673,14 @@ app.route('/post/:postid')
                                 postID: req.params.postid
                             });
                             newUPR.save((UPRrelationSaveError) => {
-                                if (UPRrelationError) throw err;
+                                if (UPRrelationError) console.log(err);
                                 Post.findById(req.params.postid, (err, post) => {
-                                    if (err) throw err;
+                                    if (err) console.log(err);
                                     if (user.id == post.byID) {
                                         res.status(200).send('samed');
                                     } else {
                                         User.findById(post.byID, (err, u) => {
-                                            if (err) throw err;
+                                            if (err) console.log(err);
                                             let newNotif = new Notification({
                                                 byID: user.id,
                                                 userID: u._id,
@@ -688,7 +688,7 @@ app.route('/post/:postid')
                                                 postID: req.params.postid
                                             });
                                             newNotif.save(err => {
-                                                if (err) throw err;
+                                                if (err) console.log(err);
                                                 res.status(200).send('samed');
                                             })
                                         });
@@ -698,9 +698,9 @@ app.route('/post/:postid')
                             });
                         } else {
                             uprelation.remove((err) => {
-                                if (err) throw err;
+                                if (err) console.log(err);
                                 Post.findById(req.params.postid, (err, post) => {
-                                    if (err) throw err;
+                                    if (err) console.log(err);
                                     if (post.byID == user.id) {
                                         res.status(200).send('unsamed');
                                     } else {
@@ -708,7 +708,7 @@ app.route('/post/:postid')
                                             postID: req.params.postid,
                                             byID: user.id
                                         }).remove(err => {
-                                            if (err) throw err;
+                                            if (err) console.log(err);
                                             res.status(200).send('unsamed');
                                         });
                                     }
@@ -743,33 +743,33 @@ app.route('/post/:postid')
                                     return callback(true, 'post not found');
                                 }
                             } else {
-                                throw err;
+                                console.log(err);
                             }
                         })
                     }, (post, callback) => {
                         UPR.find({
                             postID: post._id
                         }).remove((err) => {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             return callback(null, post);
                         })
                     }, (post, callback) => {
                         Feed.find({
                             postID: post._id
                         }).remove((err) => {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             return callback(null, post)
                         })
                     }, (post, callback) => {
                         Notification.find({
                             postID: post._id
                         }).remove((err) => {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             return callback(null, post);
                         });
                     }, (post, callback) => {
                         post.remove((err) => {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             return callback(null, 'post removed');
                         })
                     }
@@ -789,7 +789,7 @@ app.route('/post/:postid/count')
         UPR.find({
             postID: req.params.postid
         }).count((err, count) => {
-            if (err) throw err;
+            if (err) console.log(err);
             res.status(200).send(count.toString());
         });
     });
@@ -798,14 +798,14 @@ app.route('/post/:postid/list')
         UPR.find({
             postID: req.params.postid
         }, (err, uprs) => {
-            if (err) throw err;
+            if (err) console.log(err);
             async.map(uprs, (upr, callback) => {
                 User.findById(upr.userID, (finderr, user) => {
-                    if (finderr) throw finderr;
+                    if (finderr) console.log(finderr);
                     callback(null, user);
                 });
             }, (err, users) => {
-                if (err) throw err;
+                if (err) console.log(err);
                 res.status(200).json(users);
             });
         });
@@ -831,7 +831,7 @@ app.route('/follow/:followid')
                                     Post.find({
                                         byID: req.params.followid
                                     }, (err, posts) => {
-                                        if (err) throw err;
+                                        if (err) console.log(err);
                                         if (posts.length > 0) {
                                             async.map(posts, (post, callback) => {
                                                 let newFeed = new Feed({
@@ -840,18 +840,18 @@ app.route('/follow/:followid')
                                                     date: post.posted
                                                 });
                                                 newFeed.save(err => {
-                                                    if (err) throw err;
+                                                    if (err) console.log(err);
                                                     callback(null);
                                                 })
                                             }, (err, callback) => {
-                                                if (err) throw err;
+                                                if (err) console.log(err);
                                                 let newNotif = new Notification({
                                                     userID: req.params.followid,
                                                     type: 'follow',
                                                     byID: user.id
                                                 });
                                                 newNotif.save(nsaverr => {
-                                                    if (nsaverr) throw err;
+                                                    if (nsaverr) console.log(err);
                                                     res.status(200).send('followed');
                                                 });
                                             });
@@ -862,31 +862,31 @@ app.route('/follow/:followid')
                                                 byID: user.id
                                             });
                                             newNotif.save(nsaverr => {
-                                                if (nsaverr) throw err;
+                                                if (nsaverr) console.log(err);
                                                 res.status(200).send('followed');
                                             });
                                         }
                                     })
                                 } else {
-                                    throw err;
+                                    console.log(err);
                                 }
                             });
                         } else {
                             uur.remove((err, uurelation) => {
-                                if (err) throw err;
+                                if (err) console.log(err);
 
                                 Feed.find({
                                     followerID: user.id
                                 }, (err, feeds) => {
-                                    if (err) throw err;
+                                    if (err) console.log(err);
                                     if (feeds.length > 0) {
                                         async.map(feeds, (feed, callback) => {
                                             Post.findById(feed.postID, (err, post) => {
-                                                if (err) throw err;
+                                                if (err) console.log(err);
                                                 if (post) {
                                                     if (post.byID == uurelation.followsID) {
                                                         feed.remove(err => {
-                                                            if (err) throw err;
+                                                            if (err) console.log(err);
                                                             return callback(null);
                                                         });
                                                     } else {
@@ -898,11 +898,11 @@ app.route('/follow/:followid')
                                                 }
                                             });
                                         }, (err, callback) => {
-                                            if (err) throw err;
+                                            if (err) console.log(err);
                                             Notification.find({
                                                 userID: req.params.followid
                                             }).remove(err => {
-                                                if (err) throw err;
+                                                if (err) console.log(err);
                                                 res.status(200).send('unfollowed')
                                             });
                                         });
@@ -910,7 +910,7 @@ app.route('/follow/:followid')
                                         Notification.find({
                                             userID: req.params.followid
                                         }).remove(err => {
-                                            if (err) throw err;
+                                            if (err) console.log(err);
                                             res.status(200).send('unfollowed')
                                         });
                                     }
@@ -964,11 +964,11 @@ app.route('/feed')
                 }).skip(parseInt(req.query.offset)).limit(parseInt(req.query.limit)).sort({
                     date: -1
                 }).exec((err, feeds) => {
-                    if (err) throw err;
+                    if (err) console.log(err);
                     if (feeds.length > 0) {
                         async.map(feeds, (feed, callback) => {
                             Post.findById(feed.postID, (err, post) => {
-                                if (err) throw err;
+                                if (err) console.log(err);
                                 if (post) {
                                     return callback(null, post);
                                 } else {
@@ -976,7 +976,7 @@ app.route('/feed')
                                 }
                             })
                         }, (err, posts) => {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             res.status(200).json(posts);
                         });
                     } else {
@@ -999,18 +999,18 @@ app.route('/notifications')
                 }).limit(parseInt(req.query.limit)).sort({
                     date: -1
                 }).lean().exec((err, notifications) => {
-                    if (err) throw err;
+                    if (err) console.log(err);
                     if (notifications.length > 0) {
                         async.map(notifications, (notification, callback) => {
                             User.findById(notification.byID, (err, user) => {
-                                if (err) throw err;
+                                if (err) console.log(err);
                                 let n = notification;
                                 n.byUsername = user.username;
                                 n.byAvatar = user.avatar;
                                 callback(null, n);
                             });
                         }, (err, notifs) => {
-                            if (err) throw err;
+                            if (err) console.log(err);
                             res.status(200).json(notifs);
                         })
                     } else {
@@ -1029,7 +1029,7 @@ app.route('/notifications/count')
                 Notification.find({
                     userID: user.id
                 }, (err, notifications) => {
-                    if (err) throw err;
+                    if (err) console.log(err);
                     if (notifications) {
                         let notifAmount = 0;
                         notifications.forEach(n => {
@@ -1052,10 +1052,10 @@ app.route('/notifications/:notifid')
             if (auth[0] == "Bearer") {
                 let user = jwt.decode(auth[1], config.secret);
                 Notification.findById(req.params.notifid, (err, notification) => {
-                    if (err) throw err;
+                    if (err) console.log(err);
                     notification.read = true;
                     notification.save(err => {
-                        if (err) throw err;
+                        if (err) console.log(err);
                         res.status(200).send('read');
                     })
                 });
