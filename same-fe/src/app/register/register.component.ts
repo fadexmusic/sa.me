@@ -65,6 +65,11 @@ export class RegisterComponent implements OnInit {
               this.valid.email.valid = false;
               this.valid.email.message = 'invalid email'
               break;
+            case "wrong image":
+              this.valid.avatar.valid = false;
+              this.valid.avatar.message = "the link isn't an image"
+              break;
+
           }
         });
       } else {

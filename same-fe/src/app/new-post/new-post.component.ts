@@ -65,6 +65,9 @@ export class NewPostComponent implements OnInit {
       this.ns.newImagePost(this.imageForm.value).subscribe(res => {
         this.nos.pushNotification({type: 'success', message: 'image posted'});
         this.router.navigate(['/feed']);
+      }, err => {
+        this.imageValid.content.valid = false;
+        this.imageValid.content.message = "the link is not an image";
       });
     } else {
       this.imageValid.content.valid = false;

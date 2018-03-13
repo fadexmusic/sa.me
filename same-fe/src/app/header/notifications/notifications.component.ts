@@ -39,7 +39,7 @@ export class NotificationsComponent implements OnInit {
       });
       this.notifArray = res;
     }, err => {
-      this.notifArray = null;
+      this.notifArray = [];
     });
   }
   loadMore(): void {

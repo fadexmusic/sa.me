@@ -85,7 +85,7 @@ export class EditComponent implements OnInit {
 
     if (this.editForm.valid) {
       this.es.edit(this.editForm.value).subscribe(res => {
-        this.ns.pushNotification({type: 'success', message: 'profile info updated'});
+        this.ns.pushNotification({ type: 'success', message: 'profile info updated' });
         this.auth.setToken(res.text());
         this.editForm.get('password').reset();
       }, err => {
@@ -101,6 +101,10 @@ export class EditComponent implements OnInit {
           case "email taken":
             this.editValid.email.valid = false;
             this.editValid.email.message = 'account with this email already exists'
+            break;
+          case "wrong image":
+            this.editValid.avatar.valid = false;
+            this.editValid.avatar.message = "the link isn't an image"
             break;
         }
       });
@@ -122,7 +126,7 @@ export class EditComponent implements OnInit {
     if (this.editPasswordForm.valid) {
       if (this.editPasswordForm.get('newpassword').value == this.editPasswordForm.get('newpasswordconfirm').value) {
         this.es.editPassword(this.editPasswordForm.value).subscribe(res => {
-          this.ns.pushNotification({type: 'success', message: 'password changed'});
+          this.ns.pushNotification({ type: 'success', message: 'password changed' });
           this.editPasswordForm.reset();
         }, err => {
           switch (err.text()) {
@@ -157,7 +161,7 @@ export class EditComponent implements OnInit {
     if (this.deleteForm.valid) {
       this.es.deleteAccount(this.deleteForm.value).subscribe(res => {
         this.auth.logout();
-        this.ns.pushNotification({type: 'success', message: 'account deleted'});
+        this.ns.pushNotification({ type: 'success', message: 'account deleted' });
         this.router.navigate(['/login']);
       }, err => {
         switch (err.text()) {

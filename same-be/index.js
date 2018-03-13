@@ -44,18 +44,27 @@ app.get('/', (req, res) => {
     res.send('app works');
 });
 
+function checkImage(url) {
+    return (url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+}
+
 /* REGISTER */
 app.route('/register')
     .post((req, res) => {
         bcrypt.hash(req.body.password, config.saltRounds, (err, password) => {
             if (!err) {
                 let newUser;
+                let avatar = false;
                 if (req.body.avatar == "" || req.body.avatar == null) {
+                    avatar = true;
                     newUser = new User({
                         username: req.body.username,
                         email: req.body.email,
                         password: password
                     });
+                }
+                if (!checkImage(req.body.avatar) && !avatar) {
+                    res.status(400).send('wrong image');
                 } else {
                     newUser = new User({
                         username: req.body.username,
@@ -63,40 +72,40 @@ app.route('/register')
                         avatar: req.body.avatar,
                         password: password
                     });
+                    var mailOptions = {
+                        from: 'sa.me.socialnetwork@gmail.com',
+                        to: req.body.email,
+                        subject: 'Registration confirmation to sa.me',
+                        html: 'You were successfully registered under the name <b>' + req.body.username + '</b>, thanks and enjoy!'
+                    };
+                    //res.sendStatus(200);
+                    transporter.sendMail(mailOptions, function (error, info) {
+                        if (error) {
+                            res.status(400).send('invalid email');
+                        } else {
+                            newUser.save((err) => {
+                                if (err) {
+                                    switch (err.errmsg.split(' ')[7].split('_')[0]) {
+                                        case 'username':
+                                            res.status(400).send('username taken');
+                                            break;
+                                        case 'email':
+                                            res.status(400).send('email taken');
+                                            break;
+                                        default:
+                                            res.status(400).send('unknown error')
+                                            break;
+                                    }
+                                } else {
 
-                }
-                var mailOptions = {
-                    from: 'sa.me.socialnetwork@gmail.com',
-                    to: req.body.email,
-                    subject: 'Registration confirmation to sa.me',
-                    html: 'You were successfully registered under the name <b>' + req.body.username + '</b>, thanks and enjoy!'
-                };
-                //res.sendStatus(200);
-                transporter.sendMail(mailOptions, function (error, info) {
-                    if (error) {
-                        res.status(400).send('invalid email');
-                    } else {
-                        newUser.save((err) => {
-                            if (err) {
-                                switch (err.errmsg.split(' ')[7].split('_')[0]) {
-                                    case 'username':
-                                        res.status(400).send('username taken');
-                                        break;
-                                    case 'email':
-                                        res.status(400).send('email taken');
-                                        break;
-                                    default:
-                                        res.status(400).send('unknown error')
-                                        break;
+                                    res.sendStatus(200);
                                 }
-                            } else {
+                            });
 
-                                res.sendStatus(200);
-                            }
-                        });
+                        }
+                    });
+                }
 
-                    }
-                });
 
             } else {
                 res.status(500).send('error registering');
@@ -212,34 +221,43 @@ app.route('/user')
                         if (req.query.action == "info") {
                             user.username = req.body.username;
                             user.bio = req.body.bio;
+                            let av = null;
                             if (!req.body.avatar || req.body.avatar == "") {
+                                av = "https://betruewebdesign.com/img/avatar-300x300.png";
                                 user.avatar = "https://betruewebdesign.com/img/avatar-300x300.png";
+                            } 
+                            if (!checkImage(req.body.avatar) && !av) {
+                                res.status(400).send("wrong image");
                             } else {
-                                user.avatar = req.body.avatar;
-                            }
-                            user.email = req.body.email;
-                            user.save((err) => {
-                                if (!err) {
-                                    let token = jwt.encode({
-                                        username: req.body.username,
-                                        id: user.id
-                                    }, config.secret);
-                                    return callback(null, token)
-                                } else {
-                                    switch (err.errmsg.split(' ')[7].split('_')[0]) {
-                                        case 'username':
-                                            callback(true, 'username taken');
-                                            break;
-                                        case 'email':
-                                            callback(true, 'email taken');
-                                            break;
-                                        default:
-                                            callback(true, 'unknown error')
-                                            break;
-                                    }
-                                }
+                                if(!av){
+                                    user.avatar = req.body.avatar;
 
-                            });
+                                }
+                                user.email = req.body.email;
+                                user.save((err) => {
+                                    if (!err) {
+                                        let token = jwt.encode({
+                                            username: req.body.username,
+                                            id: user.id
+                                        }, config.secret);
+                                        return callback(null, token)
+                                    } else {
+                                        switch (err.errmsg.split(' ')[7].split('_')[0]) {
+                                            case 'username':
+                                                callback(true, 'username taken');
+                                                break;
+                                            case 'email':
+                                                callback(true, 'email taken');
+                                                break;
+                                            default:
+                                                callback(true, 'unknown error')
+                                                break;
+                                        }
+                                    }
+
+                                });
+                            }
+
                         } else if (req.query.action == "password") {
                             bcrypt.hash(req.body.newpassword, config.saltRounds, (error, password) => {
                                 if (error) {
@@ -569,58 +587,62 @@ app.route('/post')
                         }
                     });
                 } else if (req.body.type == "image") {
-                    let newPost = new Post({
-                        type: 'image',
-                        byID: user.id,
-                        content: req.body.content,
-                        description: req.body.description
-                    });
-                    newPost.save((err, post) => {
-                        if (!err) {
-                            async.waterfall([
-                                (callback) => {
-                                    UUR.find({
-                                        followsID: user.id
-                                    }, (err, uurs) => {
-                                        if (err) console.log(err);
-                                        if (uurs.length > 0) {
-                                            return callback(null, uurs)
-                                        } else {
-                                            return callback(true, 'no followers, posted')
-                                        }
-                                    })
-                                }, (uurs, callback) => {
-                                    async.map(uurs, (uur, cb) => {
-                                        let newFeed = new Feed({
-                                            followerID: uur.followerID,
-                                            postID: post._id
-                                        });
-                                        newFeed.save((err) => {
+                    if (!checkImage(req.body.content)) {
+                        res.status(400).send('wrong image')
+                    } else {
+                        let newPost = new Post({
+                            type: 'image',
+                            byID: user.id,
+                            content: req.body.content,
+                            description: req.body.description
+                        });
+                        newPost.save((err, post) => {
+                            if (!err) {
+                                async.waterfall([
+                                    (callback) => {
+                                        UUR.find({
+                                            followsID: user.id
+                                        }, (err, uurs) => {
                                             if (err) console.log(err);
-                                            return cb(null);
-                                        });
-                                    }, (err, cb) => {
-                                        if (err) console.log(err);
-                                        return callback(null, 'posted, feeds pushed')
-                                    })
-                                }
-                            ], (err, callback) => {
-                                if (err) {
-                                    if (callback == "no followers, posted") {
-
-                                        res.status(200).send(callback);
-                                    } else {
-
-                                        console.log(err);
+                                            if (uurs.length > 0) {
+                                                return callback(null, uurs)
+                                            } else {
+                                                return callback(true, 'no followers, posted')
+                                            }
+                                        })
+                                    }, (uurs, callback) => {
+                                        async.map(uurs, (uur, cb) => {
+                                            let newFeed = new Feed({
+                                                followerID: uur.followerID,
+                                                postID: post._id
+                                            });
+                                            newFeed.save((err) => {
+                                                if (err) console.log(err);
+                                                return cb(null);
+                                            });
+                                        }, (err, cb) => {
+                                            if (err) console.log(err);
+                                            return callback(null, 'posted, feeds pushed')
+                                        })
                                     }
-                                } else {
-                                    res.status(200).send(callback);
-                                }
-                            })
-                        } else {
-                            console.log(err);
-                        }
-                    });
+                                ], (err, callback) => {
+                                    if (err) {
+                                        if (callback == "no followers, posted") {
+
+                                            res.status(200).send(callback);
+                                        } else {
+
+                                            console.log(err);
+                                        }
+                                    } else {
+                                        res.status(200).send(callback);
+                                    }
+                                })
+                            } else {
+                                console.log(err);
+                            }
+                        });
+                    }
                 }
             }
         } else {
