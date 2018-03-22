@@ -18,11 +18,9 @@ $by-height: 30px;
       width: $by-height;
       height: $by-height;
       display: inline-block;
-      background-size: cover;
+      background-size: cover !important;
+      background-position: center center !important;
       vertical-align: top;
-    }
-    .avatar img {
-      height: $by-height;
     }
     .name {
       display: inline-block;

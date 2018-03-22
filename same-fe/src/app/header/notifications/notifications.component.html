@@ -1,7 +1,7 @@
 <div #notifications id="notifications">
   <div id="title">notifications</div>
   <div class="content">
-    <div *ngIf="notifArray==null" id="no-notifs">no notifications</div>
+    <div *ngIf="notifArray==null || notifArray.length==0" id="no-notifs">no notifications</div>
     <div *ngFor="let notification of notifArray; let i = index" on-mouseover="read(i)" class="notif-item" [ngClass]="{unread: !notification.read}">
       <div class="notif">
         <div class="notif-content">

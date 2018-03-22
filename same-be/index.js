@@ -223,8 +223,8 @@ app.route('/user')
                             user.bio = req.body.bio;
                             let av = null;
                             if (!req.body.avatar || req.body.avatar == "") {
-                                av = "https://betruewebdesign.com/img/avatar-300x300.png";
-                                user.avatar = "https://betruewebdesign.com/img/avatar-300x300.png";
+                                av = "https://i.imgur.com/uOL5qdB.png";
+                                user.avatar = "https://i.imgur.com/uOL5qdB.png";
                             } 
                             if (!checkImage(req.body.avatar) && !av) {
                                 res.status(400).send("wrong image");
@@ -1036,7 +1036,7 @@ app.route('/notifications')
                             res.status(200).json(notifs);
                         })
                     } else {
-                        res.status(404).send('no notifs found');
+                        res.status(200).send('no notifs found');
                     }
                 })
             }

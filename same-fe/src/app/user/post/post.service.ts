@@ -5,6 +5,9 @@ import { AuthHttp } from 'angular2-jwt/angular2-jwt';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
+
 @Injectable()
 export class PostService {
   uri: string = "post/";

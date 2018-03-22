@@ -1,8 +1,8 @@
 <div *ngIf="loaded">
   <div id="head" [ngClass]="{bioh: user.bio!=''}">
     <div id="user-info" [ngClass]="{bioh: user.bio!=''}">
-      <div id="avatar" [ngClass]="{biow: user.bio!=''}">
-        <img src="{{user.avatar}}" [ngClass]="{biow: user.bio!=''}">
+      <div id="avatar" [ngStyle]="{'background': 'url( ' + user.avatar + ')'} " [ngClass]="{biow: user.bio!=''}">
+        
       </div>
       <div id="info">
         <div id="with-bio" *ngIf="user.bio!=''">

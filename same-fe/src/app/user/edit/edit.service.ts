@@ -4,6 +4,9 @@ import { AuthHttp } from 'angular2-jwt/angular2-jwt';
 import { serverAdress } from './../../app.config';
 import { Injectable } from '@angular/core';
 
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
+
 @Injectable()
 export class EditService {
   options: RequestOptions;

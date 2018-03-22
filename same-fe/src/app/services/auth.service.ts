@@ -7,6 +7,9 @@ import { Observable } from "rxjs";
 import 'rxjs/add/operator/map';
 import { AuthConfig } from "angular2-jwt/angular2-jwt";
 
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
+
 @Injectable()
 export class AuthService {
   public token: string;

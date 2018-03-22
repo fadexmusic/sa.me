@@ -1,8 +1,8 @@
 <div class="post" *ngIf="loaded">
   <div class="by">
-    <a [routerLink]="['/'+post.by]">
-      <div class="avatar">
-        <img src="{{ user.avatar }}">
+    <a [routerLink]="['/'+user.username]">
+      <div class="avatar" [ngStyle]="{'background': 'url( ' + user.avatar + ')'} ">
+      
       </div>
     </a>
     <div class="name"><a [routerLink]="['/'+user.username]">{{ user.username }}</a> is like</div>

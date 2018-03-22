@@ -20,6 +20,10 @@ $info-height-big: 80px;
   }
   #avatar {
     height: $info-height;
+    
+    width: $info-height;
+    background-size: cover !important;
+    background-position: center center !important;
   }
   #info {
     height: $info-height;

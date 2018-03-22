@@ -32,12 +32,13 @@ export class PostComponent implements OnInit {
   removingY: number = 0;
 
   constructor(public auth: AuthService, private us: UserService, private ps: PostService, private ns: NotificationService) {
-
+    
   }
 
   ngOnInit() {
     this.us.getUserById(this.post.byID).subscribe(res => {
       this.user = res;
+      console.log(this.user)
       if (this.auth.loggedIn()) {
         if (this.user._id == this.auth.user.id) {
           this.isMe = true;

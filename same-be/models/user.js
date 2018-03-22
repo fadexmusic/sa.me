@@ -14,7 +14,7 @@ var userSchema = new Schema({
   },
   avatar: {
     type: String,
-    default: 'https://betruewebdesign.com/img/avatar-300x300.png'
+    default: 'https://i.imgur.com/uOL5qdB.png'
   },
   password: {
     type: String,
