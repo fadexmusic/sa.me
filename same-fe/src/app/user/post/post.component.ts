@@ -38,7 +38,6 @@ export class PostComponent implements OnInit {
   ngOnInit() {
     this.us.getUserById(this.post.byID).subscribe(res => {
       this.user = res;
-      console.log(this.user)
       if (this.auth.loggedIn()) {
         if (this.user._id == this.auth.user.id) {
           this.isMe = true;

@@ -60,18 +60,26 @@ app.route('/register')
                     newUser = new User({
                         username: req.body.username,
                         email: req.body.email,
-                        password: password
+                        password: password,
                     });
                 }
                 if (!checkImage(req.body.avatar) && !avatar) {
                     res.status(400).send('wrong image');
                 } else {
-                    newUser = new User({
-                        username: req.body.username,
-                        email: req.body.email,
-                        avatar: req.body.avatar,
-                        password: password
-                    });
+                    if (avatar) {
+                        newUser = new User({
+                            username: req.body.username,
+                            email: req.body.email,
+                            password: password
+                        });
+                    } else {
+                        newUser = new User({
+                            username: req.body.username,
+                            email: req.body.email,
+                            avatar: req.body.avatar,
+                            password: password
+                        });
+                    }
                     var mailOptions = {
                         from: 'sa.me.socialnetwork@gmail.com',
                         to: req.body.email,
@@ -225,11 +233,11 @@ app.route('/user')
                             if (!req.body.avatar || req.body.avatar == "") {
                                 av = "https://i.imgur.com/uOL5qdB.png";
                                 user.avatar = "https://i.imgur.com/uOL5qdB.png";
-                            } 
+                            }
                             if (!checkImage(req.body.avatar) && !av) {
                                 res.status(400).send("wrong image");
                             } else {
-                                if(!av){
+                                if (!av) {
                                     user.avatar = req.body.avatar;
 
                                 }
