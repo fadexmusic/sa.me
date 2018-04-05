@@ -87,31 +87,30 @@ app.route('/register')
                         html: 'You were successfully registered under the name <b>' + req.body.username + '</b>, thanks and enjoy!'
                     };
                     //res.sendStatus(200);
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            res.status(400).send('invalid email');
+                    newUser.save((err) => {
+                        if (err) {
+                            switch (err.errmsg.split(' ')[7].split('_')[0]) {
+                                case 'username':
+                                    res.status(400).send('username taken');
+                                    break;
+                                case 'email':
+                                    res.status(400).send('email taken');
+                                    break;
+                                default:
+                                    res.status(400).send('unknown error')
+                                    break;
+                            }
                         } else {
-                            newUser.save((err) => {
-                                if (err) {
-                                    switch (err.errmsg.split(' ')[7].split('_')[0]) {
-                                        case 'username':
-                                            res.status(400).send('username taken');
-                                            break;
-                                        case 'email':
-                                            res.status(400).send('email taken');
-                                            break;
-                                        default:
-                                            res.status(400).send('unknown error')
-                                            break;
-                                    }
+                            transporter.sendMail(mailOptions, function (error, info) {
+                                if (error) {
+                                    res.status(400).send('invalid email');
                                 } else {
-
-                                    res.sendStatus(200);
+                                     res.sendStatus(200);
                                 }
                             });
-
                         }
                     });
+
                 }
 
 
