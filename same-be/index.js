@@ -23,7 +23,7 @@ mongoose.Promise = global.Promise;
 mongoose.connect(config.dburl, {
     useMongoClient: true
 });
-
+/*
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -31,7 +31,7 @@ var transporter = nodemailer.createTransport({
         pass: 'sameprojekt12345'
     }
 });
-
+*/
 /* USE */
 app.use(bodyParser.urlencoded({
     extended: true
@@ -101,13 +101,16 @@ app.route('/register')
                                     break;
                             }
                         } else {
-                            transporter.sendMail(mailOptions, function (error, info) {
+                            res.sendStatus(200);
+                            /*transporter.sendMail(mailOptions, function (error, info) {
+                                console.log("error")
                                 if (error) {
-                                    res.status(400).send('invalid email');
+                                    console.log(error)
+                                    res.status(500).send('error sending email');
                                 } else {
                                      res.sendStatus(200);
                                 }
-                            });
+                            });*/
                         }
                     });
 
@@ -418,7 +421,13 @@ app.route('/reset')
                         subject: 'Password reset',
                         html: 'Your password has been reset to <b>' + pwd + '</b>, please log in and change your password.'
                     };
-                    transporter.sendMail(mailOptions, function (error, info) {
+                    console.log('password reset to ' + pwd);
+                    user.save((err) => {
+                        if (err) console.log(err);
+
+                        res.sendStatus(200);
+                    });
+                    /*transporter.sendMail(mailOptions, function (error, info) {
                         if (error) {
                             res.status(400).send('invalid email');
                         } else {
@@ -429,7 +438,7 @@ app.route('/reset')
                             });
                         }
                     });
-
+                    */
                 });
             }
         })

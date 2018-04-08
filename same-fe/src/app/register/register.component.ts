@@ -61,10 +61,10 @@ export class RegisterComponent implements OnInit {
               this.valid.email.valid = false;
               this.valid.email.message = 'account with this email already exists'
               break;
-            case "invalid email":
+            /*case "invalid email":
               this.valid.email.valid = false;
               this.valid.email.message = 'invalid email'
-              break;
+              break;*/
             case "wrong image":
               this.valid.avatar.valid = false;
               this.valid.avatar.message = "the link isn't an image"
